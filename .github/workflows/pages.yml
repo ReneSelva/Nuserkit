@@ -24,18 +24,39 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Prepare site and version assets
+      - name: Prepare site and fingerprint assets
         env:
-          BUILD_VERSION: ${{ github.sha }}
+          SITE_DIR: ${{ runner.temp }}/nuserkit-site
         run: |
-          site_dir="$RUNNER_TEMP/nuserkit-site"
-          mkdir -p "$site_dir"
-          cp -R index.html capturas.html normas-uso.html privacidad.html CSS JS RECURSOS "$site_dir/"
-          find "$site_dir" -type f -name '*.html' -exec sed -i "s/__BUILD_VERSION__/${BUILD_VERSION}/g" {} +
-          if grep -R "__BUILD_VERSION__" "$site_dir"; then
-            echo "A build version placeholder was not replaced." >&2
-            exit 1
-          fi
+          mkdir -p "$SITE_DIR"
+          cp -R index.html capturas.html normas-uso.html privacidad.html CSS JS RECURSOS "$SITE_DIR/"
+          node <<'NODE'
+          const crypto = require("node:crypto");
+          const fs = require("node:fs");
+          const path = require("node:path");
+
+          const siteDir = process.env.SITE_DIR;
+          const htmlFiles = fs.readdirSync(siteDir).filter((file) => file.endsWith(".html"));
+          const assetPattern = /((?:CSS|JS|RECURSOS)\/[^"'?]+)\?v=__BUILD_VERSION__/g;
+
+          for (const htmlFile of htmlFiles) {
+            const htmlPath = path.join(siteDir, htmlFile);
+            const html = fs.readFileSync(htmlPath, "utf8").replace(assetPattern, (reference, assetPath) => {
+              const localPath = path.join(siteDir, assetPath);
+              if (!fs.existsSync(localPath)) {
+                throw new Error(`Referenced asset does not exist: ${assetPath} in ${htmlFile}`);
+              }
+
+              const digest = crypto.createHash("sha256").update(fs.readFileSync(localPath)).digest("hex").slice(0, 16);
+              return `${assetPath}?v=${digest}`;
+            });
+
+            if (html.includes("__BUILD_VERSION__")) {
+              throw new Error(`Unreplaced asset version placeholder in ${htmlFile}`);
+            }
+            fs.writeFileSync(htmlPath, html);
+          }
+          NODE
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

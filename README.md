@@ -4,4 +4,4 @@ Sitio web de NurseKit con información de la aplicación, galería de capturas y
 
 ## Publicación
 
-Los cambios que se envían a `main` se publican con GitHub Actions. Cada publicación agrega el SHA del commit a las URL de los recursos locales para que el navegador descargue los archivos actualizados en lugar de reutilizar versiones anteriores de la caché.
+Los cambios que se envían a `main` se publican con GitHub Actions. Cada recurso local recibe una versión basada en el hash de su contenido: al cambiar un archivo, cambia su URL y el navegador descarga la versión nueva; los archivos sin cambios conservan la URL para poder reutilizar la caché.
