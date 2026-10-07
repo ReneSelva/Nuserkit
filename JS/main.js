@@ -125,6 +125,17 @@ if (captureLightbox && typeof captureLightbox.showModal === "function" && lightb
   let touchStartZoom = 1;
   let touchWasPinching = false;
 
+  const resetZoomGesture = () => {
+    isDragging = false;
+    pinchStartDistance = 0;
+    pinchStartZoom = 1;
+    touchStartX = null;
+    touchStartY = null;
+    touchStartZoom = 1;
+    touchWasPinching = false;
+    lightboxFrame?.classList.remove("is-dragging");
+  };
+
   const updateZoom = (nextZoom) => {
     zoomLevel = Math.max(1, Math.min(3, nextZoom));
     if (zoomLevel === 1) {
@@ -151,6 +162,7 @@ if (captureLightbox && typeof captureLightbox.showModal === "function" && lightb
     if (!image) return;
 
     activeGalleryIndex = index;
+    resetZoomGesture();
     updateZoom(1);
     lightboxImage.src = image.src;
     lightboxImage.dataset.light = image.dataset.light || "";
@@ -343,6 +355,7 @@ if (captureLightbox && typeof captureLightbox.showModal === "function" && lightb
     captureLightbox.classList.remove("is-closing", "is-sliding-next", "is-sliding-prev");
     isClosing = false;
     activeGalleryIndex = -1;
+    resetZoomGesture();
     updateZoom(1);
   });
 }
