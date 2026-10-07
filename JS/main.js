@@ -226,22 +226,14 @@ if (captureLightbox && typeof captureLightbox.showModal === "function" && lightb
     if (event.target instanceof Element && event.target.closest(".lightbox-zoom")) return;
     if (event.touches.length >= 2) {
       touchWasPinching = true;
-      touchStartX = null;
       pinchStartDistance = Math.hypot(
         event.touches[0].clientX - event.touches[1].clientX,
         event.touches[0].clientY - event.touches[1].clientY
       );
       pinchStartZoom = zoomLevel;
-    } else if (zoomLevel > 1 && event.touches.length === 1) {
-      touchStartX = event.touches[0].clientX;
-      touchStartY = event.touches[0].clientY;
-      touchStartZoom = zoomLevel;
+    } else if (zoomLevel > 1 && event.touches.length === 1 && touchStartX !== null && touchStartY !== null) {
       panStartX = panX;
       panStartY = panY;
-    } else if (zoomLevel === 1 && event.touches.length === 1) {
-      touchStartX = event.touches[0].clientX;
-      touchStartY = event.touches[0].clientY;
-      touchStartZoom = zoomLevel;
     }
   }, { passive: true });
   lightboxFrame?.addEventListener("touchmove", (event) => {
@@ -259,23 +251,6 @@ if (captureLightbox && typeof captureLightbox.showModal === "function" && lightb
       updateZoom(zoomLevel);
     }
   }, { passive: false });
-  lightboxFrame?.addEventListener("touchend", (event) => {
-    if (event.touches.length < 2) pinchStartDistance = 0;
-    if (event.touches.length === 0) {
-      const endTouch = event.changedTouches[0];
-      if (!touchWasPinching && touchStartZoom === 1 && touchStartX !== null && touchStartY !== null && endTouch) {
-        const deltaX = endTouch.clientX - touchStartX;
-        const deltaY = endTouch.clientY - touchStartY;
-        if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
-          moveGallery(deltaX < 0 ? 1 : -1);
-        }
-      }
-      touchStartX = null;
-      touchStartY = null;
-      touchStartZoom = 1;
-    }
-  }, { passive: true });
-
   document.querySelectorAll(".gallery-item .image-shell").forEach((button) => {
     button.addEventListener("click", () => {
       const image = button.querySelector("img");
@@ -311,23 +286,56 @@ if (captureLightbox && typeof captureLightbox.showModal === "function" && lightb
   });
 
   captureLightbox.addEventListener("touchstart", (event) => {
-    if (event.target instanceof Element && event.target.closest(".lightbox-frame")) return;
-    touchStartX = event.changedTouches[0]?.clientX ?? null;
+    if (event.touches.length >= 2) {
+      touchWasPinching = true;
+      touchStartX = null;
+      touchStartY = null;
+      return;
+    }
+
+    if (event.target instanceof Element && event.target.closest(".lightbox-zoom, .lightbox-nav, .lightbox-close")) {
+      touchStartX = null;
+      touchStartY = null;
+      return;
+    }
+
+    const touch = event.touches[0];
+    touchStartX = touch?.clientX ?? null;
+    touchStartY = touch?.clientY ?? null;
+    touchStartZoom = zoomLevel;
+    if (zoomLevel > 1 && event.target instanceof Element && event.target.closest(".lightbox-frame")) {
+      panStartX = panX;
+      panStartY = panY;
+    }
   }, { passive: true });
   captureLightbox.addEventListener("touchend", (event) => {
     if (touchWasPinching) {
-      if (event.touches.length === 0) touchWasPinching = false;
+      if (event.touches.length === 0) {
+        touchWasPinching = false;
+        touchStartX = null;
+        touchStartY = null;
+        touchStartZoom = 1;
+      }
       return;
     }
-    if (zoomLevel > 1) {
+
+    if (event.touches.length > 0) return;
+    const endTouch = event.changedTouches[0];
+    if (touchStartZoom !== 1 || touchStartX === null || touchStartY === null || !endTouch) {
       touchStartX = null;
+      touchStartY = null;
+      touchStartZoom = 1;
       return;
     }
-    if (touchStartX === null) return;
-    const touchEndX = event.changedTouches[0]?.clientX;
-    const distance = touchEndX - touchStartX;
+
+    const deltaX = endTouch.clientX - touchStartX;
+    const deltaY = endTouch.clientY - touchStartY;
     touchStartX = null;
-    if (Math.abs(distance) > 50) moveGallery(distance < 0 ? 1 : -1);
+    touchStartY = null;
+    touchStartZoom = 1;
+    if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      moveGallery(deltaX < 0 ? 1 : -1);
+    }
   }, { passive: true });
   captureLightbox.addEventListener("close", () => {
     window.clearTimeout(closeTimer);
