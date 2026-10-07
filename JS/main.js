@@ -109,6 +109,7 @@ if (captureLightbox && typeof captureLightbox.showModal === "function" && lightb
   const zoomInButton = captureLightbox.querySelector(".zoom-in");
   const zoomResetButton = captureLightbox.querySelector(".zoom-reset");
   let closeTimer = 0;
+  let slideTimer = 0;
   let isClosing = false;
   let zoomLevel = 1;
   let panX = 0;
@@ -148,9 +149,7 @@ if (captureLightbox && typeof captureLightbox.showModal === "function" && lightb
     panX = Math.max(-maxPanX, Math.min(maxPanX, panX));
     panY = Math.max(-maxPanY, Math.min(maxPanY, panY));
 
-    lightboxImage.style.setProperty("--zoom", String(zoomLevel));
-    lightboxImage.style.setProperty("--pan-x", `${panX}px`);
-    lightboxImage.style.setProperty("--pan-y", `${panY}px`);
+    lightboxImage.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${zoomLevel})`;
     lightboxFrame?.classList.toggle("is-zoomed", zoomLevel > 1);
     if (zoomLevelLabel) zoomLevelLabel.textContent = `${Math.round(zoomLevel * 100)}%`;
     if (zoomOutButton) zoomOutButton.disabled = zoomLevel <= 1;
@@ -175,9 +174,14 @@ if (captureLightbox && typeof captureLightbox.showModal === "function" && lightb
     }
 
     if (direction) {
+      window.clearTimeout(slideTimer);
       captureLightbox.classList.remove("is-sliding-next", "is-sliding-prev");
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       void captureLightbox.offsetWidth;
       captureLightbox.classList.add(direction > 0 ? "is-sliding-next" : "is-sliding-prev");
+      slideTimer = window.setTimeout(() => {
+        captureLightbox.classList.remove("is-sliding-next", "is-sliding-prev");
+      }, 300);
     }
   };
 
@@ -191,6 +195,7 @@ if (captureLightbox && typeof captureLightbox.showModal === "function" && lightb
     if (!captureLightbox.open || isClosing) return;
     isClosing = true;
     captureLightbox.inert = true;
+    window.clearTimeout(slideTimer);
     captureLightbox.classList.remove("is-sliding-next", "is-sliding-prev");
     captureLightbox.classList.add("is-closing");
     const closeDelay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 220;
@@ -283,6 +288,12 @@ if (captureLightbox && typeof captureLightbox.showModal === "function" && lightb
   captureLightbox.addEventListener("click", (event) => {
     if (event.target === captureLightbox) closeLightbox();
   });
+  captureLightbox.addEventListener("animationend", (event) => {
+    if (event.target === lightboxImage && event.animationName.startsWith("lightbox-slide-")) {
+      window.clearTimeout(slideTimer);
+      captureLightbox.classList.remove("is-sliding-next", "is-sliding-prev");
+    }
+  });
   captureLightbox.addEventListener("cancel", (event) => {
     event.preventDefault();
     closeLightbox();
@@ -351,6 +362,7 @@ if (captureLightbox && typeof captureLightbox.showModal === "function" && lightb
   }, { passive: true });
   captureLightbox.addEventListener("close", () => {
     window.clearTimeout(closeTimer);
+    window.clearTimeout(slideTimer);
     captureLightbox.inert = false;
     captureLightbox.classList.remove("is-closing", "is-sliding-next", "is-sliding-prev");
     isClosing = false;
