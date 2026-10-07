@@ -1,0 +1,50 @@
+name: Deploy NurseKit site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Prepare site and version assets
+        env:
+          BUILD_VERSION: ${{ github.sha }}
+        run: |
+          site_dir="$RUNNER_TEMP/nuserkit-site"
+          mkdir -p "$site_dir"
+          cp -R index.html capturas.html normas-uso.html privacidad.html CSS JS RECURSOS "$site_dir/"
+          find "$site_dir" -type f -name '*.html' -exec sed -i "s/__BUILD_VERSION__/${BUILD_VERSION}/g" {} +
+          if grep -R "__BUILD_VERSION__" "$site_dir"; then
+            echo "A build version placeholder was not replaced." >&2
+            exit 1
+          fi
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/nuserkit-site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
