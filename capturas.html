@@ -123,8 +123,10 @@
       .capture-lightbox::backdrop {
         background: rgb(8 10 15 / 88%);
         backdrop-filter: blur(8px);
+        animation: lightbox-backdrop-in 240ms ease both;
       }
       .lightbox-frame {
+        position: relative;
         width: min(92vw, 520px, 41.2dvh);
         aspect-ratio: 1080 / 2300;
         overflow: hidden;
@@ -132,6 +134,8 @@
         border: 1px solid rgb(255 255 255 / 18%);
         border-radius: 24px;
         box-shadow: 0 28px 90px rgb(0 0 0 / 45%);
+        animation: lightbox-image-in 320ms cubic-bezier(.2,.8,.2,1) both;
+        user-select: none;
       }
       .lightbox-frame img {
         display: block;
@@ -139,7 +143,22 @@
         height: 100%;
         object-fit: cover;
         object-position: center bottom;
+        pointer-events: none;
+        transform: translate3d(var(--pan-x, 0px), var(--pan-y, 0px), 0) scale(var(--zoom, 1));
+        transform-origin: center;
+        transition: transform 180ms ease;
       }
+      .lightbox-frame { touch-action: none; }
+      .lightbox-frame.is-zoomed { cursor: grab; }
+      .lightbox-frame.is-dragging { cursor: grabbing; }
+      .lightbox-frame.is-dragging img { transition: none; }
+      .capture-lightbox.is-sliding-next #lightbox-image { animation: lightbox-slide-next 260ms cubic-bezier(.2,.8,.2,1) both; }
+      .capture-lightbox.is-sliding-prev #lightbox-image { animation: lightbox-slide-prev 260ms cubic-bezier(.2,.8,.2,1) both; }
+      .capture-lightbox.is-closing::backdrop { animation: lightbox-backdrop-out 220ms ease both; }
+      .capture-lightbox.is-closing .lightbox-frame { animation: lightbox-image-out 220ms cubic-bezier(.4,0,.8,.2) both; }
+      .capture-lightbox.is-closing .lightbox-close,
+      .capture-lightbox.is-closing .lightbox-nav,
+      .capture-lightbox.is-closing .lightbox-caption { opacity: 0; transition: opacity 160ms ease; }
       .lightbox-close {
         position: fixed;
         top: max(18px, env(safe-area-inset-top));
@@ -159,6 +178,86 @@
         outline: 3px solid #fff;
         outline-offset: 3px;
       }
+      .lightbox-nav {
+        position: fixed;
+        top: 50%;
+        display: grid;
+        width: 48px;
+        height: 48px;
+        place-items: center;
+        padding: 0;
+        color: #fff;
+        background: rgb(255 255 255 / 12%);
+        border: 1px solid rgb(255 255 255 / 25%);
+        border-radius: 50%;
+        font: 400 30px/1 "DM Sans", sans-serif;
+        cursor: pointer;
+        transform: translateY(-50%);
+        transition: background-color 180ms ease, transform 180ms ease;
+      }
+      .lightbox-nav:hover { background: rgb(255 255 255 / 24%); }
+      .lightbox-nav:active { transform: translateY(-50%) scale(.94); }
+      .lightbox-nav:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+      .lightbox-prev { left: max(18px, env(safe-area-inset-left)); }
+      .lightbox-next { right: max(18px, env(safe-area-inset-right)); }
+      .lightbox-caption {
+        position: fixed;
+        right: 76px;
+        bottom: max(16px, env(safe-area-inset-bottom));
+        left: 76px;
+        margin: 0;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        text-align: center;
+        text-shadow: 0 1px 8px rgb(0 0 0 / 60%);
+      }
+      .lightbox-zoom {
+        position: absolute;
+        bottom: max(10px, env(safe-area-inset-bottom));
+        left: 50%;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px;
+        color: #fff;
+        background: rgb(20 21 25 / 84%);
+        border: 1px solid rgb(255 255 255 / 20%);
+        border-radius: 999px;
+        transform: translateX(-50%);
+        backdrop-filter: blur(12px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 180ms ease;
+      }
+      .lightbox-frame:hover .lightbox-zoom,
+      .lightbox-zoom:hover,
+      .lightbox-zoom:focus-within,
+      .lightbox-frame.is-zoomed .lightbox-zoom { opacity: 1; pointer-events: auto; }
+      .lightbox-zoom button {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        padding: 0;
+        color: inherit;
+        background: rgb(255 255 255 / 10%);
+        border: 1px solid rgb(255 255 255 / 15%);
+        border-radius: 50%;
+        font-size: 20px;
+        cursor: pointer;
+      }
+      .lightbox-zoom button:hover:not(:disabled) { background: rgb(255 255 255 / 22%); }
+      .lightbox-zoom button:disabled { opacity: .45; cursor: default; }
+      .lightbox-zoom button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+      .lightbox-zoom-level { min-width: 44px; font-size: 12px; font-weight: 700; text-align: center; }
+      .capture-lightbox.is-changing .lightbox-frame { animation: lightbox-image-in 240ms cubic-bezier(.2,.8,.2,1) both; }
+      @keyframes lightbox-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes lightbox-image-in { from { opacity: 0; transform: translateY(12px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+      @keyframes lightbox-backdrop-out { from { opacity: 1; } to { opacity: 0; } }
+      @keyframes lightbox-image-out { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(10px) scale(.97); } }
+      @keyframes lightbox-slide-next { from { opacity: .45; transform: translateX(34px); } to { opacity: 1; transform: translateX(0); } }
+      @keyframes lightbox-slide-prev { from { opacity: .45; transform: translateX(-34px); } to { opacity: 1; transform: translateX(0); } }
       @media (max-width: 900px) {
         .gallery-grid {
           grid-template-columns: repeat(5, minmax(180px, 1fr));
@@ -176,9 +275,25 @@
         .gallery-heading p { font-size: 12px; }
         .gallery-grid { grid-template-columns: repeat(5, minmax(72vw, 1fr)); gap: 16px; }
         .image-shell { border-radius: 22px; }
+        .lightbox-frame { width: min(78vw, 41.2dvh); border-radius: 18px; }
+        .lightbox-nav { width: 42px; height: 42px; font-size: 26px; }
+        .lightbox-prev { left: 12px; }
+        .lightbox-next { right: 12px; }
+        .lightbox-zoom { bottom: max(8px, env(safe-area-inset-bottom)); }
+      }
+      @media (hover: none) {
+        .lightbox-zoom { opacity: 1; pointer-events: auto; }
       }
       @media (prefers-reduced-motion: reduce) {
         .gallery-item:hover .image-shell { transform: none; }
+        .capture-lightbox::backdrop, .lightbox-frame, .capture-lightbox #lightbox-image { animation: none; }
+        #capture-lightbox.is-sliding-next #lightbox-image,
+        #capture-lightbox.is-sliding-prev #lightbox-image,
+        #capture-lightbox.is-closing::backdrop,
+        #capture-lightbox.is-closing .lightbox-frame { animation: none; }
+        .lightbox-frame img { transition: none; }
+        .lightbox-nav, .lightbox-nav:active { transition: none; transform: translateY(-50%); }
+        .lightbox-zoom button { transition: none; }
       }
     </style>
     <script src="JS/main.js" defer></script>
@@ -271,7 +386,18 @@
     </footer>
     <dialog class="capture-lightbox" id="capture-lightbox" aria-label="Captura ampliada">
       <button class="lightbox-close" type="button" aria-label="Cerrar captura ampliada">×</button>
-      <div class="lightbox-frame"><img id="lightbox-image" alt=""></div>
+      <button class="lightbox-nav lightbox-prev" type="button" aria-label="Ver captura anterior">‹</button>
+      <div class="lightbox-frame">
+        <img id="lightbox-image" alt="" draggable="false">
+        <div class="lightbox-zoom" role="group" aria-label="Controles de zoom">
+          <button class="zoom-out" type="button" aria-label="Alejar" disabled>−</button>
+          <span class="lightbox-zoom-level" id="lightbox-zoom-level" aria-live="polite">100%</span>
+          <button class="zoom-in" type="button" aria-label="Acercar">+</button>
+          <button class="zoom-reset" type="button" aria-label="Restablecer zoom">↺</button>
+        </div>
+      </div>
+      <button class="lightbox-nav lightbox-next" type="button" aria-label="Ver captura siguiente">›</button>
+      <p class="lightbox-caption" id="lightbox-caption" aria-live="polite"></p>
     </dialog>
   </body>
 </html>

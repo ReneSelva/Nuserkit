@@ -44,6 +44,11 @@ const galleryModeLabel = document.querySelector("[data-current-mode]");
 const galleryImages = document.querySelectorAll(".gallery-item img[data-light][data-dark]");
 const captureLightbox = document.querySelector("#capture-lightbox");
 const lightboxImage = document.querySelector("#lightbox-image");
+const lightboxCaption = document.querySelector("#lightbox-caption");
+const lightboxFrame = captureLightbox?.querySelector(".lightbox-frame");
+const zoomLevelLabel = document.querySelector("#lightbox-zoom-level");
+const galleryImageList = [...galleryImages];
+let activeGalleryIndex = -1;
 
 function setPageTheme(theme, persist = false) {
   if (theme !== "light" && theme !== "dark") return;
@@ -74,12 +79,8 @@ function setPageTheme(theme, persist = false) {
     image.src = image.dataset[theme === "dark" ? "dark" : "light"];
   });
 
-  if (captureLightbox?.open && lightboxImage) {
-    const activeImage = [...galleryImages].find((image) => image.dataset.light === lightboxImage.dataset.light && image.dataset.dark === lightboxImage.dataset.dark);
-    if (activeImage) {
-      lightboxImage.src = activeImage.src;
-      lightboxImage.alt = activeImage.alt;
-    }
+  if (captureLightbox?.open && lightboxImage && activeGalleryIndex >= 0) {
+    lightboxImage.src = galleryImageList[activeGalleryIndex].src;
   }
 
   if (persist) {
@@ -102,23 +103,239 @@ themeToggle?.addEventListener("click", () => {
 
 if (captureLightbox && typeof captureLightbox.showModal === "function" && lightboxImage) {
   const closeButton = captureLightbox.querySelector(".lightbox-close");
+  const previousButton = captureLightbox.querySelector(".lightbox-prev");
+  const nextButton = captureLightbox.querySelector(".lightbox-next");
+  const zoomOutButton = captureLightbox.querySelector(".zoom-out");
+  const zoomInButton = captureLightbox.querySelector(".zoom-in");
+  const zoomResetButton = captureLightbox.querySelector(".zoom-reset");
+  let closeTimer = 0;
+  let isClosing = false;
+  let zoomLevel = 1;
+  let panX = 0;
+  let panY = 0;
+  let isDragging = false;
+  let pointerStartX = 0;
+  let pointerStartY = 0;
+  let panStartX = 0;
+  let panStartY = 0;
+  let pinchStartDistance = 0;
+  let pinchStartZoom = 1;
+  let touchStartX = null;
+  let touchStartY = null;
+  let touchStartZoom = 1;
+  let touchWasPinching = false;
+
+  const updateZoom = (nextZoom) => {
+    zoomLevel = Math.max(1, Math.min(3, nextZoom));
+    if (zoomLevel === 1) {
+      panX = 0;
+      panY = 0;
+    }
+
+    const maxPanX = lightboxFrame ? lightboxFrame.clientWidth * (zoomLevel - 1) / 2 : 0;
+    const maxPanY = lightboxFrame ? lightboxFrame.clientHeight * (zoomLevel - 1) / 2 : 0;
+    panX = Math.max(-maxPanX, Math.min(maxPanX, panX));
+    panY = Math.max(-maxPanY, Math.min(maxPanY, panY));
+
+    lightboxImage.style.setProperty("--zoom", String(zoomLevel));
+    lightboxImage.style.setProperty("--pan-x", `${panX}px`);
+    lightboxImage.style.setProperty("--pan-y", `${panY}px`);
+    lightboxFrame?.classList.toggle("is-zoomed", zoomLevel > 1);
+    if (zoomLevelLabel) zoomLevelLabel.textContent = `${Math.round(zoomLevel * 100)}%`;
+    if (zoomOutButton) zoomOutButton.disabled = zoomLevel <= 1;
+    if (zoomInButton) zoomInButton.disabled = zoomLevel >= 3;
+  };
+
+  const showGalleryImage = (index, direction = 0) => {
+    const image = galleryImageList[index];
+    if (!image) return;
+
+    activeGalleryIndex = index;
+    updateZoom(1);
+    lightboxImage.src = image.src;
+    lightboxImage.dataset.light = image.dataset.light || "";
+    lightboxImage.dataset.dark = image.dataset.dark || "";
+    lightboxImage.alt = image.alt || `Captura de NurseKit: ${image.closest(".gallery-item")?.querySelector("figcaption")?.textContent || ""}`;
+
+    if (lightboxCaption) {
+      const caption = image.closest(".gallery-item")?.querySelector("figcaption")?.textContent || "";
+      lightboxCaption.textContent = `${caption} · ${index + 1} de ${galleryImageList.length}`;
+    }
+
+    if (direction) {
+      captureLightbox.classList.remove("is-sliding-next", "is-sliding-prev");
+      void captureLightbox.offsetWidth;
+      captureLightbox.classList.add(direction > 0 ? "is-sliding-next" : "is-sliding-prev");
+    }
+  };
+
+  const moveGallery = (direction) => {
+    if (isClosing || galleryImageList.length < 2 || activeGalleryIndex < 0) return;
+    const nextIndex = (activeGalleryIndex + direction + galleryImageList.length) % galleryImageList.length;
+    showGalleryImage(nextIndex, direction);
+  };
+
+  const closeLightbox = () => {
+    if (!captureLightbox.open || isClosing) return;
+    isClosing = true;
+    captureLightbox.inert = true;
+    captureLightbox.classList.remove("is-sliding-next", "is-sliding-prev");
+    captureLightbox.classList.add("is-closing");
+    const closeDelay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 220;
+    closeTimer = window.setTimeout(() => captureLightbox.close(), closeDelay);
+  };
+
+  zoomOutButton?.addEventListener("click", () => updateZoom(zoomLevel - 0.25));
+  zoomInButton?.addEventListener("click", () => updateZoom(zoomLevel + 0.25));
+  zoomResetButton?.addEventListener("click", () => updateZoom(1));
+
+  lightboxFrame?.addEventListener("wheel", (event) => {
+    event.preventDefault();
+    updateZoom(zoomLevel + (event.deltaY < 0 ? 0.2 : -0.2));
+  }, { passive: false });
+
+  lightboxFrame?.addEventListener("pointerdown", (event) => {
+    if (event.target instanceof Element && event.target.closest(".lightbox-zoom")) return;
+    if (event.pointerType === "touch" || zoomLevel <= 1 || event.button !== 0) return;
+    event.preventDefault();
+    isDragging = true;
+    pointerStartX = event.clientX;
+    pointerStartY = event.clientY;
+    panStartX = panX;
+    panStartY = panY;
+    lightboxFrame.classList.add("is-dragging");
+    lightboxFrame.setPointerCapture(event.pointerId);
+  });
+  lightboxFrame?.addEventListener("pointermove", (event) => {
+    if (!isDragging) return;
+    panX = panStartX + event.clientX - pointerStartX;
+    panY = panStartY + event.clientY - pointerStartY;
+    updateZoom(zoomLevel);
+  });
+  const stopDragging = () => {
+    isDragging = false;
+    lightboxFrame?.classList.remove("is-dragging");
+  };
+  lightboxFrame?.addEventListener("pointerup", stopDragging);
+  lightboxFrame?.addEventListener("pointercancel", stopDragging);
+  lightboxFrame?.addEventListener("lostpointercapture", stopDragging);
+  document.addEventListener("pointerup", stopDragging);
+  document.addEventListener("pointercancel", stopDragging);
+
+  lightboxFrame?.addEventListener("touchstart", (event) => {
+    if (event.target instanceof Element && event.target.closest(".lightbox-zoom")) return;
+    if (event.touches.length >= 2) {
+      touchWasPinching = true;
+      touchStartX = null;
+      pinchStartDistance = Math.hypot(
+        event.touches[0].clientX - event.touches[1].clientX,
+        event.touches[0].clientY - event.touches[1].clientY
+      );
+      pinchStartZoom = zoomLevel;
+    } else if (zoomLevel > 1 && event.touches.length === 1) {
+      touchStartX = event.touches[0].clientX;
+      touchStartY = event.touches[0].clientY;
+      touchStartZoom = zoomLevel;
+      panStartX = panX;
+      panStartY = panY;
+    } else if (zoomLevel === 1 && event.touches.length === 1) {
+      touchStartX = event.touches[0].clientX;
+      touchStartY = event.touches[0].clientY;
+      touchStartZoom = zoomLevel;
+    }
+  }, { passive: true });
+  lightboxFrame?.addEventListener("touchmove", (event) => {
+    if (event.touches.length >= 2 && pinchStartDistance > 0) {
+      event.preventDefault();
+      const distance = Math.hypot(
+        event.touches[0].clientX - event.touches[1].clientX,
+        event.touches[0].clientY - event.touches[1].clientY
+      );
+      updateZoom(pinchStartZoom * distance / pinchStartDistance);
+    } else if (zoomLevel > 1 && event.touches.length === 1 && touchStartX !== null && touchStartY !== null) {
+      event.preventDefault();
+      panX = panStartX + event.touches[0].clientX - touchStartX;
+      panY = panStartY + event.touches[0].clientY - touchStartY;
+      updateZoom(zoomLevel);
+    }
+  }, { passive: false });
+  lightboxFrame?.addEventListener("touchend", (event) => {
+    if (event.touches.length < 2) pinchStartDistance = 0;
+    if (event.touches.length === 0) {
+      const endTouch = event.changedTouches[0];
+      if (!touchWasPinching && touchStartZoom === 1 && touchStartX !== null && touchStartY !== null && endTouch) {
+        const deltaX = endTouch.clientX - touchStartX;
+        const deltaY = endTouch.clientY - touchStartY;
+        if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
+          moveGallery(deltaX < 0 ? 1 : -1);
+        }
+      }
+      touchStartX = null;
+      touchStartY = null;
+      touchStartZoom = 1;
+    }
+  }, { passive: true });
 
   document.querySelectorAll(".gallery-item .image-shell").forEach((button) => {
     button.addEventListener("click", () => {
       const image = button.querySelector("img");
       if (!image) return;
 
-      lightboxImage.src = image.src;
-      lightboxImage.dataset.light = image.dataset.light || "";
-      lightboxImage.dataset.dark = image.dataset.dark || "";
-      lightboxImage.alt = image.alt || `Captura de NurseKit: ${button.getAttribute("aria-label")?.replace("Ampliar captura: ", "") || ""}`;
+      window.clearTimeout(closeTimer);
+      isClosing = false;
+      captureLightbox.inert = false;
+      captureLightbox.classList.remove("is-closing", "is-sliding-next", "is-sliding-prev");
+      showGalleryImage(galleryImageList.indexOf(image));
       captureLightbox.showModal();
     });
   });
 
-  closeButton?.addEventListener("click", () => captureLightbox.close());
+  previousButton?.addEventListener("click", () => moveGallery(-1));
+  nextButton?.addEventListener("click", () => moveGallery(1));
+  closeButton?.addEventListener("click", closeLightbox);
   captureLightbox.addEventListener("click", (event) => {
-    if (event.target === captureLightbox) captureLightbox.close();
+    if (event.target === captureLightbox) closeLightbox();
+  });
+  captureLightbox.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    closeLightbox();
+  });
+  captureLightbox.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      moveGallery(-1);
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      moveGallery(1);
+    }
+  });
+
+  captureLightbox.addEventListener("touchstart", (event) => {
+    if (event.target instanceof Element && event.target.closest(".lightbox-frame")) return;
+    touchStartX = event.changedTouches[0]?.clientX ?? null;
+  }, { passive: true });
+  captureLightbox.addEventListener("touchend", (event) => {
+    if (touchWasPinching) {
+      if (event.touches.length === 0) touchWasPinching = false;
+      return;
+    }
+    if (zoomLevel > 1) {
+      touchStartX = null;
+      return;
+    }
+    if (touchStartX === null) return;
+    const touchEndX = event.changedTouches[0]?.clientX;
+    const distance = touchEndX - touchStartX;
+    touchStartX = null;
+    if (Math.abs(distance) > 50) moveGallery(distance < 0 ? 1 : -1);
+  }, { passive: true });
+  captureLightbox.addEventListener("close", () => {
+    window.clearTimeout(closeTimer);
+    captureLightbox.inert = false;
+    captureLightbox.classList.remove("is-closing", "is-sliding-next", "is-sliding-prev");
+    isClosing = false;
+    activeGalleryIndex = -1;
+    updateZoom(1);
   });
 }
 
