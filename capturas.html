@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="es" data-page-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f7f8fc">
+    <meta name="description" content="Explora las capturas de NurseKit y cambia entre sus temas claro y oscuro.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Capturas de NurseKit">
+    <meta property="og:description" content="Conoce la interfaz de NurseKit y explora sus capturas en tema claro y oscuro.">
+    <meta name="twitter:card" content="summary">
+    <script>
+      (() => {
+        let savedTheme;
+        try {
+          savedTheme = localStorage.getItem("nursekit-page-theme");
+        } catch {
+          return;
+        }
+
+        if (savedTheme === "light" || savedTheme === "dark") {
+          document.documentElement.dataset.pageTheme = savedTheme;
+          document.querySelector('meta[name="theme-color"]').content = savedTheme === "dark" ? "#111214" : "#f7f8fc";
+        }
+      })();
+    </script>
+    <title>NurseKit | Capturas</title>
+    <link rel="icon" href="RECURSOS/IDENTIDAD/logo.webp" type="image/webp">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/styles.css">
+    <style>
+      body { min-width: 320px; }
+      .gallery-main {
+        min-height: calc(100vh - 78px);
+        padding: clamp(48px, 8vh, 88px) 0 56px;
+        overflow: hidden;
+        background: var(--paper);
+        transition: background-color 220ms ease;
+      }
+      .gallery-heading {
+        max-width: 1440px;
+        margin: 0 auto 38px;
+        padding: 0 max(5vw, 24px);
+      }
+      .gallery-heading h1 {
+        margin: 0;
+        font-size: clamp(32px, 4vw, 52px);
+        font-weight: 800;
+        line-height: 1.08;
+      }
+      .gallery-heading p {
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.6;
+      }
+      .gallery-grid {
+        display: grid;
+        max-width: 1440px;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        align-items: start;
+        gap: clamp(16px, 2.4vw, 34px);
+        margin: 0 auto;
+        padding: 0 max(5vw, 24px);
+      }
+      .gallery-item {
+        min-width: 0;
+        margin: 0;
+      }
+      .image-shell {
+        display: grid;
+        aspect-ratio: 1080 / 2300;
+        place-items: center;
+        overflow: hidden;
+        width: 100%;
+        padding: 0;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        box-shadow: 0 24px 60px rgb(15 23 42 / 12%);
+        cursor: zoom-in;
+        transition: background-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+      }
+      .gallery-item:hover .image-shell {
+        transform: translateY(-6px);
+        box-shadow: 0 30px 68px rgb(15 23 42 / 18%);
+      }
+      .gallery-item img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center bottom;
+      }
+      .image-shell:focus-visible {
+        outline: 3px solid var(--blue);
+        outline-offset: 4px;
+      }
+      .gallery-item figcaption {
+        padding: 14px 2px 0;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .capture-lightbox {
+        position: fixed;
+        inset: 0;
+        display: none;
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        max-height: none;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        overflow: visible;
+        background: transparent;
+        border: 0;
+      }
+      .capture-lightbox[open] { display: flex; }
+      .capture-lightbox::backdrop {
+        background: rgb(8 10 15 / 88%);
+        backdrop-filter: blur(8px);
+      }
+      .lightbox-frame {
+        width: min(92vw, 520px, 41.2dvh);
+        aspect-ratio: 1080 / 2300;
+        overflow: hidden;
+        background: #111214;
+        border: 1px solid rgb(255 255 255 / 18%);
+        border-radius: 24px;
+        box-shadow: 0 28px 90px rgb(0 0 0 / 45%);
+      }
+      .lightbox-frame img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center bottom;
+      }
+      .lightbox-close {
+        position: fixed;
+        top: max(18px, env(safe-area-inset-top));
+        right: max(18px, env(safe-area-inset-right));
+        display: grid;
+        width: 46px;
+        height: 46px;
+        place-items: center;
+        color: #fff;
+        background: rgb(255 255 255 / 12%);
+        border: 1px solid rgb(255 255 255 / 25%);
+        border-radius: 50%;
+        font: 400 30px/1 "DM Sans", sans-serif;
+        cursor: pointer;
+      }
+      .lightbox-close:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 3px;
+      }
+      @media (max-width: 900px) {
+        .gallery-grid {
+          grid-template-columns: repeat(5, minmax(180px, 1fr));
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          scrollbar-color: var(--line) transparent;
+          scrollbar-width: thin;
+          padding-bottom: 18px;
+        }
+        .gallery-item { scroll-snap-align: start; }
+      }
+      @media (max-width: 600px) {
+        .gallery-main { min-height: calc(100vh - 68px); padding-top: 42px; }
+        .gallery-heading { margin-bottom: 28px; }
+        .gallery-heading p { font-size: 12px; }
+        .gallery-grid { grid-template-columns: repeat(5, minmax(72vw, 1fr)); gap: 16px; }
+        .image-shell { border-radius: 22px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .gallery-item:hover .image-shell { transform: none; }
+      }
+    </style>
+    <script src="JS/main.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Saltar al contenido</a>
+    <header class="site-header">
+      <a class="brand" href="index.html#inicio" aria-label="NurseKit, inicio">
+        <img src="RECURSOS/IDENTIDAD/logo.webp" alt="" width="42" height="42">
+        <span>NurseKit</span>
+      </a>
+      <nav class="main-navigation" id="main-navigation" aria-label="Navegación principal">
+        <a href="index.html#inicio">Inicio</a>
+        <a href="capturas.html" aria-current="page">Capturas</a>
+        <a href="index.html#herramientas">Herramientas</a>
+        <a href="index.html#preguntas">Preguntas</a>
+        <a class="nav-download" href="index.html#descargar">Descargar</a>
+      </nav>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Cambiar a modo oscuro" aria-pressed="false">
+        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.7"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l-1.42 1.42m11.3-11.3 1.42 1.42"/></svg>
+        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.6 8.6 0 1 0 20.2 15.2Z"/><path d="M16.5 3v3m-1.5-1.5h3"/></svg>
+      </button>
+      <button class="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-navigation">
+        <span></span><span></span>
+      </button>
+    </header>
+
+    <main class="gallery-main" id="main-content">
+      <div class="gallery-heading">
+        <div>
+          <h1 id="gallery-title">Capturas de interfaz de la aplicación</h1>
+          <p data-current-mode>Modo claro</p>
+        </div>
+        <p>¡Te damos la bienvenida! Conoce cómo es la app antes de descargarla.</p>
+      </div>
+
+      <section class="gallery-grid" aria-label="Capturas de NurseKit">
+            <figure class="gallery-item">
+              <button class="image-shell" type="button" aria-label="Ampliar captura: Inicio"><img src="RECURSOS/CAPTURAS_RECORTADAS/claro1.jpg" data-light="RECURSOS/CAPTURAS_RECORTADAS/claro1.jpg" data-dark="RECURSOS/CAPTURAS_RECORTADAS/oscuro1.jpg" alt="" width="1080" height="2300" loading="lazy" decoding="async"></button>
+              <figcaption>Inicio</figcaption>
+            </figure>
+
+            <figure class="gallery-item">
+              <button class="image-shell" type="button" aria-label="Ampliar captura: Recursos"><img src="RECURSOS/CAPTURAS_RECORTADAS/claro2.jpg" data-light="RECURSOS/CAPTURAS_RECORTADAS/claro2.jpg" data-dark="RECURSOS/CAPTURAS_RECORTADAS/oscuro2.jpg" alt="" width="1080" height="2300" loading="lazy" decoding="async"></button>
+              <figcaption>Recursos</figcaption>
+            </figure>
+
+            <figure class="gallery-item">
+              <button class="image-shell" type="button" aria-label="Ampliar captura: Herramientas"><img src="RECURSOS/CAPTURAS_RECORTADAS/claro3.jpg" data-light="RECURSOS/CAPTURAS_RECORTADAS/claro3.jpg" data-dark="RECURSOS/CAPTURAS_RECORTADAS/oscuro3.jpg" alt="" width="1080" height="2300" loading="lazy" decoding="async"></button>
+              <figcaption>Herramientas</figcaption>
+            </figure>
+
+            <figure class="gallery-item">
+              <button class="image-shell" type="button" aria-label="Ampliar captura: Vademécum"><img src="RECURSOS/CAPTURAS_RECORTADAS/claro4.jpg" data-light="RECURSOS/CAPTURAS_RECORTADAS/claro4.jpg" data-dark="RECURSOS/CAPTURAS_RECORTADAS/oscuro4.jpg" alt="" width="1080" height="2300" loading="lazy" decoding="async"></button>
+              <figcaption>Vademécum</figcaption>
+            </figure>
+
+            <figure class="gallery-item">
+              <button class="image-shell" type="button" aria-label="Ampliar captura: Cálculos"><img src="RECURSOS/CAPTURAS_RECORTADAS/claro5.jpg" data-light="RECURSOS/CAPTURAS_RECORTADAS/claro5.jpg" data-dark="RECURSOS/CAPTURAS_RECORTADAS/oscuro5.jpg" alt="" width="1080" height="2300" loading="lazy" decoding="async"></button>
+              <figcaption>Cálculos</figcaption>
+            </figure>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="footer-identity">
+        <a class="brand footer-brand" href="index.html#inicio"><span>NurseKit</span></a>
+        <p>Recurso educativo y de apoyo técnico. No sustituye el juicio clínico ni los protocolos institucionales.</p>
+        <p class="footer-company">Desarrollado por RCAX Labs</p>
+        <span class="footer-support-title">Soporte</span>
+        <a class="footer-contact-link" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=ig.carlosivan02%40gmail.com&amp;su=Soporte%20NurseKit" target="_blank" rel="noopener noreferrer">ig.carlosivan02@gmail.com</a>
+      </div>
+      <div class="footer-contact">
+        <span class="footer-nav-title">Redes sociales</span>
+        <a class="footer-social-link" href="https://whatsapp.com/channel/0029Vb8tmrQ2ZjCsbtK6os0n" target="_blank" rel="noreferrer">
+          <svg class="social-icon whatsapp-icon" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#25D366"/><path fill="#fff" d="M29.2 10.7a13 13 0 0 0-20.5 15.7L7 33l6.8-1.8a13 13 0 0 0 15.4-20.5ZM20 29.2c-2 0-4-.5-5.7-1.6l-.4-.2-4 1 1.1-3.9-.3-.4A9.7 9.7 0 1 1 20 29.2Zm5.3-7.3c-.3-.1-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2l-1 1.1c-.2.2-.4.3-.7.1a8.1 8.1 0 0 1-2.4-1.5 9 9 0 0 1-1.7-2.1c-.2-.3 0-.5.1-.7l.5-.5.3-.5c.1-.2 0-.4 0-.6l-1-2.3c-.3-.6-.6-.5-.8-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.2 5 4.4.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4 0-.1-.2-.2-.5-.3Z"/></svg>
+          <span>Canal de WhatsApp</span>
+          <span class="social-arrow" aria-hidden="true">↗</span>
+        </a>
+        <span class="footer-social-link social-upcoming">
+          <svg class="social-icon facebook-icon" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#0866FF"/><path fill="#fff" d="M22.4 33V21.2h4l.6-4.6h-4.6v-2.9c0-1.3.4-2.2 2.3-2.2h2.5V7.4c-.4-.1-1.9-.2-3.6-.2-3.6 0-6 2.2-6 6.2v3.2h-4v4.6h4V33h4.8Z"/></svg>
+          <span>Facebook <small>Próximamente</small></span>
+        </span>
+      </div>
+      <nav class="footer-legal" aria-label="Información legal">
+        <span class="footer-nav-title">Información</span>
+        <a href="privacidad.html">Política de privacidad</a>
+        <a href="normas-uso.html">Normas de uso</a>
+      </nav>
+      <span class="copyright">© <span id="current-year">2026</span> NurseKit · RCAX Labs</span>
+    </footer>
+    <dialog class="capture-lightbox" id="capture-lightbox" aria-label="Captura ampliada">
+      <button class="lightbox-close" type="button" aria-label="Cerrar captura ampliada">×</button>
+      <div class="lightbox-frame"><img id="lightbox-image" alt=""></div>
+    </dialog>
+  </body>
+</html>
