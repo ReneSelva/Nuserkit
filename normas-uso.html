@@ -3,117 +3,94 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f7f8fc">
-    <meta name="description" content="Ejemplo de estructura de las normas de uso de NurseKit.">
+    <meta name="theme-color" content="#f4f2ea">
+    <meta name="description" content="Consulta las normas de uso de NurseKit.">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Normas de uso | NurseKit">
-    <meta property="og:description" content="Ejemplo provisional de normas de uso de NurseKit, pendiente de revisión y publicación oficial.">
+    <meta property="og:description" content="Información sobre el uso responsable de NurseKit.">
     <meta name="twitter:card" content="summary">
     <script>
       (() => {
-        let savedTheme;
         try {
-          savedTheme = localStorage.getItem("nursekit-page-theme");
-        } catch {
-          return;
-        }
-
-        if (savedTheme === "light" || savedTheme === "dark") {
-          document.documentElement.dataset.pageTheme = savedTheme;
-          document.querySelector('meta[name="theme-color"]').content = savedTheme === "dark" ? "#111214" : "#f7f8fc";
-        }
+          const theme = localStorage.getItem("nursekit-page-theme");
+          if (theme === "light" || theme === "dark") {
+            document.documentElement.dataset.pageTheme = theme;
+            document.querySelector('meta[name="theme-color"]').content = theme === "dark" ? "#111a16" : "#f4f2ea";
+          }
+        } catch {}
       })();
     </script>
     <title>Normas de uso | NurseKit</title>
     <link rel="icon" href="RECURSOS/IDENTIDAD/logo.webp?v=__BUILD_VERSION__" type="image/webp">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="CSS/styles.css?v=__BUILD_VERSION__">
-    <link rel="stylesheet" href="CSS/legal-pages.css?v=__BUILD_VERSION__">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/tailwind.css?v=__BUILD_VERSION__">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
     <script src="JS/main.js?v=__BUILD_VERSION__" defer></script>
   </head>
-  <body>
-    <a class="skip-link" href="#main-content">Saltar al contenido</a>
-    <header class="site-header">
-      <a class="brand" href="index.html#inicio" aria-label="NurseKit, inicio">
-        <img src="RECURSOS/IDENTIDAD/logo.webp?v=__BUILD_VERSION__" alt="" width="42" height="42">
-        <span>NurseKit</span>
-      </a>
-      <nav class="main-navigation" id="main-navigation" aria-label="Navegación principal">
-        <a href="index.html#inicio">Inicio</a>
-        <a href="capturas.html">Capturas</a>
-        <a href="index.html#herramientas">Herramientas</a>
-        <a href="index.html#preguntas">Preguntas</a>
-        <a class="nav-download" href="index.html#descargar">Descargar</a>
-      </nav>
-      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Cambiar a modo oscuro" aria-pressed="false">
-        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.7"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
-        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.6 8.6 0 1 0 20.2 15.2Z"/><path d="M16.5 3v3m-1.5-1.5h3"/></svg>
-      </button>
-      <button class="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-navigation">
-        <span></span><span></span>
-      </button>
+  <body class="bg-[#f4f2ea] font-sans text-[#17251f] antialiased dark:bg-[#111a16] dark:text-[#f1f2e9]">
+    <a class="skip-link fixed left-4 top-4 z-50 rounded-full border-2 border-[#244f3d] bg-[#f4f2ea] px-5 py-3 text-sm font-bold text-[#17251f] transition-transform focus:translate-y-0" href="#main-content">Saltar al contenido</a>
+    <header class="sticky top-0 z-40 border-b border-[#d9d8ce] bg-[#f4f2ea]/95 backdrop-blur-xl dark:border-[#304039] dark:bg-[#111a16]/95">
+      <div class="relative mx-auto flex h-[76px] max-w-[1320px] items-center justify-between px-5 md:px-10">
+        <a class="flex items-center gap-3 font-display text-xl font-extrabold tracking-[-0.06em]" href="index.html#inicio" aria-label="NurseKit, inicio"><img class="h-10 w-10 rounded-xl" src="RECURSOS/IDENTIDAD/logo.webp?v=__BUILD_VERSION__" alt="" width="40" height="40"><span>NurseKit<span class="text-[#668b53]">.</span></span></a>
+        <nav class="main-navigation absolute right-0 top-full z-20 w-full gap-1 border-b border-[#d9d8ce] bg-[#f4f2ea] p-5 shadow-xl dark:border-[#304039] dark:bg-[#111a16] md:static md:flex md:w-auto md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0 md:shadow-none dark:md:bg-transparent" id="main-navigation" aria-label="Navegación principal">
+          <a class="rounded-lg px-3 py-2 text-sm font-semibold text-[#526158] hover:text-[#426a3d] dark:text-[#c0c9c0] dark:hover:text-[#b8e58c]" href="index.html#inicio">Inicio</a><a class="rounded-lg px-3 py-2 text-sm font-semibold text-[#526158] hover:text-[#426a3d] dark:text-[#c0c9c0] dark:hover:text-[#b8e58c]" href="capturas.html">La app</a><a class="rounded-lg px-3 py-2 text-sm font-semibold text-[#526158] hover:text-[#426a3d] dark:text-[#c0c9c0] dark:hover:text-[#b8e58c]" href="index.html#herramientas">Herramientas</a><a class="rounded-full bg-[#244f3d] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#183c2c] dark:bg-[#b8e58c] dark:text-[#17251f]" href="index.html#descargar">Descargar ↗</a>
+        </nav>
+        <div class="ml-3 flex items-center gap-2"><button class="grid h-10 w-10 place-items-center rounded-full border border-[#d9d8ce] text-lg dark:border-[#405148]" id="theme-toggle" type="button" aria-label="Cambiar a modo oscuro" aria-pressed="false"><span data-theme-icon aria-hidden="true">☼</span></button><button class="menu-toggle grid h-10 w-10 place-items-center rounded-full border border-[#d9d8ce] text-xl md:hidden dark:border-[#405148]" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-navigation"><span aria-hidden="true">☰</span></button></div>
+      </div>
     </header>
-
-    <main class="legal-page" id="main-content">
-      <section class="legal-hero" aria-labelledby="policy-title">
-        <div class="legal-hero-inner">
-          <p class="eyebrow"><span class="status-dot"></span> Información legal</p>
-          <h1 id="policy-title">Normas de uso</h1>
-          <p>Información de ejemplo sobre el uso responsable de NurseKit.</p>
-        </div>
-      </section>
-
-      <article class="legal-document">
-        <p class="legal-placeholder"><strong>Contenido de ejemplo:</strong> este texto Lorem ipsum es provisional y debe reemplazarse por las normas oficiales antes de publicar.</p>
-        <p class="legal-updated">Última actualización: pendiente</p>
-
-        <section>
-          <h2>Uso de la aplicación</h2>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vitae neque sed justo tincidunt consequat. Sed at sapien non magna varius feugiat. Morbi posuere, nibh sed facilisis luctus, lectus nibh interdum erat, a vulputate sem lacus at justo.</p>
-        </section>
-        <section>
-          <h2>Conducta en la comunidad</h2>
-          <p>Praesent euismod, ipsum vitae cursus consequat, justo erat feugiat augue, vitae tincidunt lorem eros vel nisi. Donec posuere velit quis magna aliquet, sed porta tortor consequat. Curabitur in velit non nulla commodo efficitur.</p>
-        </section>
-        <section>
-          <h2>Contenido y responsabilidad</h2>
-          <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nam accumsan lacus id lorem tempor, vitae feugiat est ullamcorper. Aliquam erat volutpat. Aenean at eros sed sapien cursus tincidunt.</p>
-        </section>
-        <section>
-          <h2>Actualizaciones de estas normas</h2>
-          <p>Fusce eget nibh sed mauris luctus vestibulum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Reemplaza este texto con las condiciones oficiales aplicables al uso del servicio.</p>
-        </section>
+    <main id="main-content" class="mx-auto grid max-w-[1320px] gap-10 px-5 py-12 md:grid-cols-[.7fr_1.3fr] md:gap-20 md:px-10 md:py-20">
+      <header class="md:sticky md:top-28 md:h-fit">
+        <a class="mb-8 inline-flex items-center gap-2 text-sm font-bold text-[#426a3d] hover:underline dark:text-[#b8e58c]" href="index.html">← Volver al inicio</a>
+        <p class="mb-4 text-xs font-bold uppercase tracking-[.18em] text-[#668b53] dark:text-[#b8e58c]">NurseKit / Información legal</p>
+        <h1 class="font-display text-4xl font-extrabold leading-[1.02] tracking-[-.06em] sm:text-5xl">Normas<br>de uso.</h1>
+        <p class="mt-5 max-w-sm leading-7 text-[#667168] dark:text-[#aeb9b0]">Información para usar NurseKit de manera responsable.</p>
+        <p class="mt-8 text-xs font-semibold uppercase tracking-wider text-[#758077] dark:text-[#9eaaa1]">Última actualización: pendiente</p>
+      </header>
+      <article class="rounded-3xl border border-[#d9d8ce] bg-[#ece9df] p-6 sm:p-10 dark:border-[#34443a] dark:bg-[#17221c]">
+        <p class="mb-8 rounded-xl border-l-4 border-[#668b53] bg-[#dfe8d7] p-4 text-sm leading-6 text-[#43554a] dark:bg-[#213328] dark:text-[#d6ddd6]"><strong>Contenido de ejemplo:</strong> este texto provisional debe reemplazarse por las normas oficiales antes de publicar.</p>
+        <section class="border-t border-[#d2d0c5] py-7 dark:border-[#35453b]"><span class="text-xs font-bold text-[#668b53] dark:text-[#b8e58c]">01</span><h2 class="mt-2 font-display text-xl font-bold">Uso de la aplicación</h2><p class="mb-0 mt-3 text-sm leading-7 text-[#667168] dark:text-[#aeb9b0]">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vitae neque sed justo tincidunt consequat. Sed at sapien non magna varius feugiat. Morbi posuere, nibh sed facilisis luctus, lectus nibh interdum erat, a vulputate sem lacus at justo.</p></section>
+        <section class="border-t border-[#d2d0c5] py-7 dark:border-[#35453b]"><span class="text-xs font-bold text-[#668b53] dark:text-[#b8e58c]">02</span><h2 class="mt-2 font-display text-xl font-bold">Conducta en la comunidad</h2><p class="mb-0 mt-3 text-sm leading-7 text-[#667168] dark:text-[#aeb9b0]">Praesent euismod, ipsum vitae cursus consequat, justo erat feugiat augue, vitae tincidunt lorem eros vel nisi. Donec posuere velit quis magna aliquet, sed porta tortor consequat. Curabitur in velit non nulla commodo efficitur.</p></section>
+        <section class="border-t border-[#d2d0c5] py-7 dark:border-[#35453b]"><span class="text-xs font-bold text-[#668b53] dark:text-[#b8e58c]">03</span><h2 class="mt-2 font-display text-xl font-bold">Contenido y responsabilidad</h2><p class="mb-0 mt-3 text-sm leading-7 text-[#667168] dark:text-[#aeb9b0]">Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nam accumsan lacus id lorem tempor, vitae feugiat est ullamcorper. Aliquam erat volutpat. Aenean at eros sed sapien cursus tincidunt.</p></section>
+        <section class="border-t border-[#d2d0c5] py-7 dark:border-[#35453b]"><span class="text-xs font-bold text-[#668b53] dark:text-[#b8e58c]">04</span><h2 class="mt-2 font-display text-xl font-bold">Actualizaciones de estas normas</h2><p class="mb-0 mt-3 text-sm leading-7 text-[#667168] dark:text-[#aeb9b0]">Fusce eget nibh sed mauris luctus vestibulum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Reemplaza este texto con las condiciones oficiales aplicables al uso del servicio.</p></section>
       </article>
     </main>
-
-    <footer class="site-footer">
-      <div class="footer-identity">
-        <a class="brand footer-brand" href="index.html#inicio"><span>NurseKit</span></a>
-        <p>Recurso educativo y de apoyo técnico. No sustituye el juicio clínico ni los protocolos institucionales.</p>
-        <p class="footer-company">Desarrollado por RCAX Labs</p>
-        <span class="footer-support-title">Soporte</span>
-        <a class="footer-contact-link" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=ig.carlosivan02%40gmail.com&amp;su=Soporte%20NurseKit" target="_blank" rel="noopener noreferrer">ig.carlosivan02@gmail.com</a>
+    <footer class="bg-[#17251f] text-[#f1f2e9] dark:bg-[#0b110e]">
+      <div class="mx-auto grid max-w-[1320px] gap-10 px-5 py-12 md:grid-cols-[1.3fr_.7fr_.7fr_.7fr] md:px-10">
+        <div><a class="font-display text-2xl font-extrabold tracking-[-.06em]" href="index.html#inicio">NurseKit<span class="text-[#b8e58c]">.</span></a><p class="mt-4 max-w-md text-sm leading-6 text-[#c0c9c0]">Recurso educativo y de apoyo técnico. No sustituye el juicio clínico ni los protocolos institucionales.</p><p class="mb-0 mt-5 text-xs font-semibold text-[#9eaaa1]">Desarrollado por RCAX Labs</p></div>
+        <div><p class="text-xs font-bold uppercase tracking-[.16em] text-[#b8e58c]">Enlaces</p><a class="mt-4 block text-sm text-[#d6ddd6] hover:text-white" href="capturas.html">Capturas de la app</a><a class="mt-3 block text-sm text-[#d6ddd6] hover:text-white" href="privacidad.html">Política de privacidad</a><a class="mt-3 block text-sm text-[#d6ddd6] hover:text-white" href="normas-uso.html">Normas de uso</a></div>
+        <div><p class="text-xs font-bold uppercase tracking-[.16em] text-[#b8e58c]">Contacto</p>
+          <div class="mt-4 grid gap-3">
+            <button class="flex w-fit items-center gap-3 border-0 bg-transparent p-0 text-left text-sm text-[#d6ddd6] transition hover:text-white" type="button" data-contact-open aria-haspopup="dialog" aria-controls="contact-dialog"><img class="h-7 w-7 object-contain" src="RECURSOS/ICONOS/gmail_logo.png" alt="" aria-hidden="true"><span><span class="block text-xs text-[#9eaaa1]">Soporte por correo</span><span class="mt-0.5 block font-semibold">Gmail</span></span></button>
+          </div>
+        </div>
+        <div><p class="text-xs font-bold uppercase tracking-[.16em] text-[#b8e58c]">Redes sociales</p>
+          <div class="mt-4 grid gap-3">
+            <a class="flex w-fit items-center gap-3 text-sm text-[#d6ddd6] transition hover:text-white" href="https://whatsapp.com/channel/0029Vb8tmrQ2ZjCsbtK6os0n" target="_blank" rel="noopener noreferrer"><img class="h-7 w-7 object-contain" src="RECURSOS/ICONOS/wasap_logo.png" alt="" aria-hidden="true"><span class="font-semibold">WhatsApp</span></a>
+          </div>
+        </div>
       </div>
-      <div class="footer-contact">
-        <span class="footer-nav-title">Redes sociales</span>
-        <a class="footer-social-link" href="https://whatsapp.com/channel/0029Vb8tmrQ2ZjCsbtK6os0n" target="_blank" rel="noreferrer">
-          <svg class="social-icon whatsapp-icon" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#25D366"/><path fill="#fff" d="M29.2 10.7a13 13 0 0 0-20.5 15.7L7 33l6.8-1.8a13 13 0 0 0 15.4-20.5ZM20 29.2c-2 0-4-.5-5.7-1.6l-.4-.2-4 1 1.1-3.9-.3-.4A9.7 9.7 0 1 1 20 29.2Zm5.3-7.3c-.3-.1-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2l-1 1.1c-.2.2-.4.3-.7.1a8.1 8.1 0 0 1-2.4-1.5 9 9 0 0 1-1.7-2.1c-.2-.3 0-.5.1-.7l.5-.5.3-.5c.1-.2 0-.4 0-.6l-1-2.3c-.3-.6-.6-.5-.8-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.2 5 4.4.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4 0-.1-.2-.2-.5-.3Z"/></svg>
-          <span>Canal de WhatsApp</span>
-          <span class="social-arrow" aria-hidden="true">↗</span>
-        </a>
-        <span class="footer-social-link social-upcoming">
-          <svg class="social-icon facebook-icon" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#0866FF"/><path fill="#fff" d="M22.4 33V21.2h4l.6-4.6h-4.6v-2.9c0-1.3.4-2.2 2.3-2.2h2.5V7.4c-.4-.1-1.9-.2-3.6-.2-3.6 0-6 2.2-6 6.2v3.2h-4v4.6h4V33h4.8Z"/></svg>
-          <span>Facebook <small>Próximamente</small></span>
-        </span>
-      </div>
-      <nav class="footer-legal" aria-label="Información legal">
-        <span class="footer-nav-title">Información</span>
-        <a href="privacidad.html">Política de privacidad</a>
-        <a href="normas-uso.html" aria-current="page">Normas de uso</a>
-      </nav>
-      <span class="copyright">© <span id="current-year">2026</span> NurseKit · RCAX Labs</span>
+      <div class="border-t border-white/15"><div class="mx-auto flex max-w-[1320px] flex-wrap justify-between gap-2 px-5 py-4 text-xs text-[#aeb9b0] md:px-10"><span>© <span id="current-year">2026</span> NurseKit · RCAX Labs</span><span>Hecha para aprender y acompañar.</span></div></div>
     </footer>
+    <dialog class="contact-dialog w-[calc(100%-2rem)] max-w-lg rounded-3xl border border-[#d9d8ce] p-0 text-[#17251f] shadow-2xl dark:border-[#34443a] dark:text-[#f1f2e9]" id="contact-dialog" aria-labelledby="contact-title">
+      <div class="p-6 sm:p-8">
+        <div class="flex items-start justify-between gap-6">
+          <div><p class="text-xs font-bold uppercase tracking-[.16em] text-[#668b53] dark:text-[#b8e58c]">Soporte NurseKit</p><h2 class="mt-2 font-display text-2xl font-extrabold tracking-tight" id="contact-title">Escríbenos</h2><p class="mt-2 text-sm leading-6 text-[#667168] dark:text-[#aeb9b0]">Déjanos tu correo y tu mensaje. Te responderemos a la dirección que indiques.</p></div>
+          <button class="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[#d9d8ce] text-2xl leading-none text-[#526158] transition hover:bg-[#ece9df] dark:border-[#405148] dark:text-[#d6ddd6] dark:hover:bg-[#213328]" type="button" data-contact-close aria-label="Cerrar formulario">×</button>
+        </div>
+        <form class="mt-6 grid gap-4" id="contact-form">
+          <label class="grid gap-2 text-sm font-semibold" for="contact-email">Tu Gmail o correo
+            <input class="min-h-12 rounded-xl border border-[#c9c8bd] bg-white px-4 text-[#17251f] outline-none transition placeholder:text-[#879087] focus:border-[#668b53] focus:ring-2 focus:ring-[#668b53]/20 dark:border-[#405148] dark:bg-[#111a16] dark:text-[#f1f2e9] dark:focus:border-[#b8e58c]" id="contact-email" name="from_email" type="email" autocomplete="email" maxlength="254" placeholder="tu@gmail.com" required autofocus>
+          </label>
+          <label class="grid gap-2 text-sm font-semibold" for="contact-message">Mensaje
+            <textarea class="min-h-36 resize-y rounded-xl border border-[#c9c8bd] bg-white px-4 py-3 text-[#17251f] outline-none transition placeholder:text-[#879087] focus:border-[#668b53] focus:ring-2 focus:ring-[#668b53]/20 dark:border-[#405148] dark:bg-[#111a16] dark:text-[#f1f2e9] dark:focus:border-[#b8e58c]" id="contact-message" name="message" maxlength="4000" placeholder="¿En qué podemos ayudarte?" required></textarea>
+          </label>
+          <p class="text-xs leading-5 text-[#758077] dark:text-[#9eaaa1]">No incluyas datos personales ni información que identifique a pacientes.</p>
+          <p class="contact-form-status hidden text-sm font-semibold" id="contact-form-status" role="status" aria-live="polite" aria-atomic="true"></p>
+          <button class="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#244f3d] px-6 font-bold text-white transition hover:bg-[#183c2c] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#668b53] disabled:cursor-wait disabled:opacity-60 dark:bg-[#b8e58c] dark:text-[#17251f] dark:hover:bg-[#c9efa3]" id="contact-submit" type="submit">Enviar mensaje <span aria-hidden="true">↗</span></button>
+        </form>
+      </div>
+    </dialog>
   </body>
 </html>

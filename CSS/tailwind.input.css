@@ -1,0 +1,212 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-page-theme="dark"], [data-page-theme="dark"] *));
+
+@view-transition {
+  navigation: auto;
+}
+
+@theme {
+  --font-sans: "DM Sans", sans-serif;
+  --font-display: "Manrope", sans-serif;
+}
+
+@source "../*.html";
+@source "../JS";
+
+html { color-scheme: light; }
+[data-page-theme="dark"] { color-scheme: dark; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+}
+
+#theme-toggle [data-theme-icon],
+.menu-toggle span {
+  display: inline-block;
+  transition: transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+[data-page-theme="dark"] #theme-toggle [data-theme-icon] {
+  transform: rotate(180deg);
+}
+
+.menu-toggle[aria-expanded="true"] span {
+  transform: rotate(90deg);
+}
+
+body {
+  min-width: 320px;
+}
+
+::selection {
+  color: #10261f;
+  background: #b8f36b;
+}
+
+::view-transition-old(root) {
+  animation: page-exit 160ms ease-in both;
+}
+
+::view-transition-new(root) {
+  animation: page-enter 240ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes page-exit {
+  to { opacity: 0; transform: translateY(-0.35rem); }
+}
+
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(0.5rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+body.theme-changing::after {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--theme-transition-overlay);
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  animation: theme-color-wash 420ms ease-out both;
+}
+
+@keyframes theme-color-wash {
+  from { opacity: .28; }
+  to { opacity: 0; }
+}
+
+.skip-link {
+  transform: translateY(calc(-100% - 1rem));
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.faq-more {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 300ms ease, opacity 220ms ease;
+}
+
+.faq-more.is-expanded {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.faq-more-content {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.capture-status .light-swatch { background: #f4f2ea; }
+.capture-status .dark-swatch { background: #111a16; }
+
+.capture-lightbox {
+  position: fixed;
+  inset: 0;
+  display: none;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  overflow: visible;
+  color: white;
+  background: transparent;
+  border: 0;
+}
+
+.capture-lightbox[open] { display: flex; }
+.capture-lightbox::backdrop { background: rgb(8 12 10 / 88%); backdrop-filter: blur(8px); }
+.lightbox-frame { position: relative; width: min(78vw, 520px, 41.2dvh); aspect-ratio: 1080 / 2300; overflow: hidden; background: #111; border: 1px solid rgb(255 255 255 / 20%); border-radius: 1.25rem; box-shadow: 0 2rem 6rem rgb(0 0 0 / 45%); touch-action: none; user-select: none; }
+.lightbox-frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center bottom; pointer-events: none; transform: translate3d(0, 0, 0) scale(1); transform-origin: center; transition: transform 180ms ease; }
+.lightbox-frame.is-zoomed { cursor: grab; }
+.lightbox-frame.is-dragging { cursor: grabbing; }
+.lightbox-frame.is-dragging img { transition: none; }
+.lightbox-close, .lightbox-nav { position: fixed; display: grid; place-items: center; color: white; background: rgb(255 255 255 / 12%); border: 1px solid rgb(255 255 255 / 25%); border-radius: 999px; cursor: pointer; }
+.lightbox-close { top: max(1rem, env(safe-area-inset-top)); right: max(1rem, env(safe-area-inset-right)); width: 2.8rem; height: 2.8rem; font-size: 1.8rem; }
+.lightbox-nav { top: 50%; width: 3rem; height: 3rem; font-size: 1.8rem; transform: translateY(-50%); transition: background-color 180ms ease, transform 180ms ease; }
+.lightbox-nav:hover { background: rgb(255 255 255 / 24%); }
+.lightbox-nav:active { transform: translateY(-50%) scale(.94); }
+.lightbox-prev { left: max(1rem, env(safe-area-inset-left)); }
+.lightbox-next { right: max(1rem, env(safe-area-inset-right)); }
+.lightbox-caption { position: fixed; right: 5rem; bottom: max(1rem, env(safe-area-inset-bottom)); left: 5rem; margin: 0; color: white; font-size: .875rem; font-weight: 600; text-align: center; text-shadow: 0 1px 8px rgb(0 0 0 / 60%); }
+.lightbox-zoom { position: absolute; z-index: 2; bottom: max(.75rem, env(safe-area-inset-bottom)); left: 50%; display: flex; align-items: center; gap: .5rem; padding: .45rem; color: white; background: rgb(20 21 25 / 55%); border: 1px solid rgb(255 255 255 / 24%); border-radius: 999px; transform: translateX(-50%); opacity: 0; pointer-events: none; transition: opacity 180ms ease; backdrop-filter: blur(8px); }
+.lightbox-frame:hover .lightbox-zoom, .lightbox-zoom:hover, .lightbox-zoom:focus-within, .lightbox-frame.is-zoomed .lightbox-zoom { opacity: 1; pointer-events: auto; }
+.lightbox-zoom button { display: grid; width: 2.1rem; height: 2.1rem; place-items: center; padding: 0; color: inherit; background: rgb(255 255 255 / 12%); border: 1px solid rgb(255 255 255 / 18%); border-radius: 999px; font-size: 1.25rem; cursor: pointer; }
+.lightbox-zoom button:disabled { opacity: .45; cursor: default; }
+.lightbox-zoom-level { min-width: 2.75rem; font-size: .75rem; font-weight: 700; text-align: center; }
+.capture-lightbox.is-sliding-next #lightbox-image { animation: lightbox-slide-next 260ms ease both; }
+.capture-lightbox.is-sliding-prev #lightbox-image { animation: lightbox-slide-prev 260ms ease both; }
+.capture-lightbox.is-closing::backdrop { animation: lightbox-fade-out 220ms ease both; }
+.capture-lightbox.is-closing .lightbox-frame { animation: lightbox-image-out 220ms ease both; }
+.capture-lightbox.is-changing .lightbox-frame { animation: lightbox-image-in 240ms ease both; }
+
+.contact-dialog {
+  max-height: calc(100dvh - 2rem);
+  margin: auto;
+  overflow-y: auto;
+  background: #f4f2ea;
+}
+
+.contact-dialog::backdrop {
+  background: rgb(8 12 10 / 68%);
+  backdrop-filter: blur(5px);
+}
+
+[data-page-theme="dark"] .contact-dialog {
+  background: #17221c;
+}
+
+.contact-dialog[open] {
+  animation: contact-dialog-in 180ms ease-out both;
+}
+
+.contact-form-status[data-state="success"] {
+  color: #426a3d;
+}
+
+.contact-form-status[data-state="error"] {
+  color: #b42318;
+}
+
+[data-page-theme="dark"] .contact-form-status[data-state="error"] {
+  color: #fda29b;
+}
+
+@keyframes contact-dialog-in {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes lightbox-image-in { from { opacity: 0; transform: translateY(12px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes lightbox-image-out { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(10px) scale(.97); } }
+@keyframes lightbox-fade-out { to { opacity: 0; } }
+@keyframes lightbox-slide-next { from { opacity: .45; transform: translateX(34px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes lightbox-slide-prev { from { opacity: .45; transform: translateX(-34px); } to { opacity: 1; transform: translateX(0); } }
+
+@media (max-width: 767px) {
+  .main-navigation { position: absolute; top: calc(100% + 1px); right: 0; left: 0; z-index: 20; display: grid; max-height: 0; gap: 0; overflow: hidden; padding: 0 1.25rem; visibility: hidden; opacity: 0; transform: translateY(-.4rem); transition: max-height 240ms ease, gap 240ms ease, padding 240ms ease, opacity 180ms ease, transform 220ms ease, visibility 0s linear 240ms; }
+  .main-navigation[data-open="true"] { max-height: 24rem; gap: .25rem; padding: 1rem 1.25rem 1.25rem; visibility: visible; opacity: 1; transform: translateY(0); transition: max-height 240ms ease, gap 240ms ease, padding 240ms ease, opacity 180ms ease, transform 220ms ease, visibility 0s; background: #f5f3eb; border-bottom: 1px solid #d9d8ce; box-shadow: 0 1rem 1.5rem rgb(20 35 29 / 10%); }
+  [data-page-theme="dark"] .main-navigation[data-open="true"] { background: #17241f; border-color: #31433b; }
+  .lightbox-nav { width: 2.6rem; height: 2.6rem; }
+  .lightbox-prev { left: .65rem; }
+  .lightbox-next { right: .65rem; }
+  .lightbox-frame { width: min(72vw, 41.2dvh); }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .lightbox-zoom { opacity: 1; pointer-events: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .01ms !important; }
+}

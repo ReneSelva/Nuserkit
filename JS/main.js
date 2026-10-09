@@ -5,14 +5,17 @@ menuButton?.addEventListener("click", () => {
   const isOpen = menuButton.getAttribute("aria-expanded") === "true";
   menuButton.setAttribute("aria-expanded", String(!isOpen));
   menuButton.setAttribute("aria-label", isOpen ? "Abrir menú" : "Cerrar menú");
-  navigation?.classList.toggle("is-open", !isOpen);
+  menuButton.querySelector("span").textContent = isOpen ? "☰" : "×";
+  navigation?.setAttribute("data-open", String(!isOpen));
 });
 
 navigation?.querySelectorAll("a").forEach((link) => {
   link.addEventListener("click", () => {
     menuButton?.setAttribute("aria-expanded", "false");
     menuButton?.setAttribute("aria-label", "Abrir menú");
-    navigation.classList.remove("is-open");
+    const menuIcon = menuButton?.querySelector("span");
+    if (menuIcon) menuIcon.textContent = "☰";
+    navigation.setAttribute("data-open", "false");
   });
 });
 
@@ -21,6 +24,67 @@ if (year) year.textContent = String(new Date().getFullYear());
 
 const faqMoreToggle = document.querySelector(".faq-more-toggle");
 const faqMore = document.querySelector("#faq-more");
+
+const contactDialog = document.querySelector("#contact-dialog");
+const contactForm = document.querySelector("#contact-form");
+const contactSubmit = document.querySelector("#contact-submit");
+const contactFormStatus = document.querySelector("#contact-form-status");
+
+document.querySelectorAll("[data-contact-open]").forEach((button) => {
+  button.addEventListener("click", () => {
+    if (!contactDialog || contactDialog.open) return;
+    contactDialog.showModal();
+    contactFormStatus?.classList.add("hidden");
+    contactFormStatus?.removeAttribute("data-state");
+    window.requestAnimationFrame(() => contactDialog.querySelector("#contact-email")?.focus());
+  });
+});
+
+document.querySelector("[data-contact-close]")?.addEventListener("click", () => {
+  contactDialog?.close();
+});
+
+contactDialog?.addEventListener("click", (event) => {
+  if (event.target === contactDialog) contactDialog.close();
+});
+
+contactForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!contactSubmit || !contactFormStatus || contactSubmit.disabled) return;
+
+  contactSubmit.disabled = true;
+  contactFormStatus.classList.remove("hidden");
+  contactFormStatus.removeAttribute("data-state");
+  contactFormStatus.textContent = "Enviando tu mensaje…";
+
+  try {
+    if (!window.emailjs) {
+      throw new Error("No se pudo cargar el servicio de correo.");
+    }
+
+    const formData = new FormData(contactForm);
+    await window.emailjs.send(
+      "service_kzr0wz3",
+      "template_btsyr48",
+      {
+        from_email: formData.get("from_email"),
+        reply_to: formData.get("from_email"),
+        message: formData.get("message"),
+      },
+      { publicKey: "6JVCVMKFx8vARONhy" },
+    );
+
+    contactForm.reset();
+    contactFormStatus.dataset.state = "success";
+    contactFormStatus.textContent = "Mensaje enviado. Gracias por escribirnos.";
+  } catch (error) {
+    console.error("No se pudo enviar el formulario de soporte.", error);
+    contactFormStatus.dataset.state = "error";
+    contactFormStatus.textContent = "No se pudo enviar el mensaje. Inténtalo de nuevo más tarde.";
+  } finally {
+    contactSubmit.disabled = false;
+  }
+});
 
 if (faqMoreToggle && faqMore) {
   faqMoreToggle.addEventListener("click", () => {
@@ -37,11 +101,13 @@ if (faqMoreToggle && faqMore) {
 
 const themeToggle = document.querySelector("#theme-toggle");
 const themeColor = document.querySelector('meta[name="theme-color"]');
+let themeTransitionTimer = 0;
 
 const captureThemeLabel = document.querySelector("[data-theme-label]");
 const captureStatusSwatch = document.querySelector(".capture-status .theme-swatch");
 const galleryModeLabel = document.querySelector("[data-current-mode]");
 const galleryImages = document.querySelectorAll(".gallery-item img[data-light][data-dark]");
+const heroArtwork = document.querySelector("#hero-artwork[data-light][data-dark]");
 const captureLightbox = document.querySelector("#capture-lightbox");
 const lightboxImage = document.querySelector("#lightbox-image");
 const lightboxCaption = document.querySelector("#lightbox-caption");
@@ -54,12 +120,14 @@ function setPageTheme(theme, persist = false) {
   if (theme !== "light" && theme !== "dark") return;
 
   document.documentElement.dataset.pageTheme = theme;
-  if (themeColor) themeColor.content = theme === "dark" ? "#111214" : "#f7f8fc";
+  if (themeColor) themeColor.content = theme === "dark" ? "#111a16" : "#f4f2ea";
 
   if (themeToggle) {
     const isDark = theme === "dark";
     themeToggle.setAttribute("aria-pressed", String(isDark));
     themeToggle.setAttribute("aria-label", `Cambiar a modo ${isDark ? "claro" : "oscuro"}`);
+    const themeIcon = themeToggle.querySelector("[data-theme-icon]");
+    if (themeIcon) themeIcon.textContent = isDark ? "☾" : "☼";
   }
 
   if (captureThemeLabel) {
@@ -79,6 +147,11 @@ function setPageTheme(theme, persist = false) {
     image.src = image.dataset[theme === "dark" ? "dark" : "light"];
   });
 
+  if (heroArtwork) {
+    heroArtwork.src = heroArtwork.dataset[theme === "dark" ? "dark" : "light"];
+    heroArtwork.alt = `Vista de NurseKit en modo ${theme === "dark" ? "oscuro" : "claro"}: herramientas clínicas y recursos de enfermería`;
+  }
+
   if (captureLightbox?.open && lightboxImage && activeGalleryIndex >= 0) {
     lightboxImage.src = galleryImageList[activeGalleryIndex].src;
   }
@@ -88,6 +161,7 @@ function setPageTheme(theme, persist = false) {
       localStorage.setItem("nursekit-page-theme", theme);
     } catch {}
   }
+
 }
 
 let savedTheme = null;
@@ -98,7 +172,25 @@ setPageTheme(savedTheme || document.documentElement.dataset.pageTheme);
 
 themeToggle?.addEventListener("click", () => {
   const currentTheme = document.documentElement.dataset.pageTheme;
-  setPageTheme(currentTheme === "dark" ? "light" : "dark", true);
+  const nextTheme = currentTheme === "dark" ? "light" : "dark";
+
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const body = document.body;
+    window.clearTimeout(themeTransitionTimer);
+    body.classList.remove("theme-changing");
+    body.style.setProperty(
+      "--theme-transition-overlay",
+      currentTheme === "dark" ? "#111a16" : "#f4f2ea",
+    );
+    void body.offsetWidth;
+    body.classList.add("theme-changing");
+    themeTransitionTimer = window.setTimeout(() => {
+      body.classList.remove("theme-changing");
+      body.style.removeProperty("--theme-transition-overlay");
+    }, 480);
+  }
+
+  setPageTheme(nextTheme, true);
 });
 
 if (captureLightbox && typeof captureLightbox.showModal === "function" && lightboxImage) {

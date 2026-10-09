@@ -24,6 +24,17 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Build Tailwind CSS
+        run: |
+          npm ci
+          npm run build:css
+
       - name: Prepare site and fingerprint assets
         env:
           SITE_DIR: ${{ runner.temp }}/nuserkit-site

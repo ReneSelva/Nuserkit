@@ -3,402 +3,98 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f7f8fc">
-    <meta name="description" content="Explora las capturas de NurseKit y cambia entre sus temas claro y oscuro.">
+    <meta name="theme-color" content="#f4f2ea">
+    <meta name="description" content="Explora las pantallas de NurseKit y cambia entre los temas claro y oscuro.">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Capturas de NurseKit">
-    <meta property="og:description" content="Conoce la interfaz de NurseKit y explora sus capturas en tema claro y oscuro.">
+    <meta property="og:title" content="NurseKit | Capturas de la app">
+    <meta property="og:description" content="Conoce la interfaz de NurseKit antes de instalarla.">
     <meta name="twitter:card" content="summary">
     <script>
       (() => {
-        let savedTheme;
         try {
-          savedTheme = localStorage.getItem("nursekit-page-theme");
-        } catch {
-          return;
-        }
-
-        if (savedTheme === "light" || savedTheme === "dark") {
-          document.documentElement.dataset.pageTheme = savedTheme;
-          document.querySelector('meta[name="theme-color"]').content = savedTheme === "dark" ? "#111214" : "#f7f8fc";
-        }
+          const theme = localStorage.getItem("nursekit-page-theme");
+          if (theme === "light" || theme === "dark") {
+            document.documentElement.dataset.pageTheme = theme;
+            document.querySelector('meta[name="theme-color"]').content = theme === "dark" ? "#111a16" : "#f4f2ea";
+          }
+        } catch {}
       })();
     </script>
-    <title>NurseKit | Capturas</title>
+    <title>NurseKit | Capturas de la app</title>
     <link rel="icon" href="RECURSOS/IDENTIDAD/logo.webp?v=__BUILD_VERSION__" type="image/webp">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="CSS/styles.css?v=__BUILD_VERSION__">
-    <style>
-      body { min-width: 320px; }
-      .gallery-main {
-        min-height: calc(100vh - 78px);
-        padding: clamp(48px, 8vh, 88px) 0 56px;
-        overflow: hidden;
-        background: var(--paper);
-        transition: background-color 220ms ease;
-      }
-      .gallery-heading {
-        max-width: 1440px;
-        margin: 0 auto 38px;
-        padding: 0 max(5vw, 24px);
-      }
-      .gallery-heading h1 {
-        margin: 0;
-        font-size: clamp(32px, 4vw, 52px);
-        font-weight: 800;
-        line-height: 1.08;
-      }
-      .gallery-heading p {
-        margin: 10px 0 0;
-        color: var(--muted);
-        font-size: 15px;
-        line-height: 1.6;
-      }
-      .gallery-grid {
-        display: grid;
-        max-width: 1440px;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-        align-items: start;
-        gap: clamp(16px, 2.4vw, 34px);
-        margin: 0 auto;
-        padding: 0 max(5vw, 24px);
-      }
-      .gallery-item {
-        min-width: 0;
-        margin: 0;
-      }
-      .image-shell {
-        display: grid;
-        aspect-ratio: 1080 / 2300;
-        place-items: center;
-        overflow: hidden;
-        width: 100%;
-        padding: 0;
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: 28px;
-        box-shadow: 0 24px 60px rgb(15 23 42 / 12%);
-        cursor: zoom-in;
-        transition: background-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
-      }
-      .gallery-item:hover .image-shell {
-        transform: translateY(-6px);
-        box-shadow: 0 30px 68px rgb(15 23 42 / 18%);
-      }
-      .gallery-item img {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center bottom;
-      }
-      .image-shell:focus-visible {
-        outline: 3px solid var(--blue);
-        outline-offset: 4px;
-      }
-      .gallery-item figcaption {
-        padding: 14px 2px 0;
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 700;
-      }
-      .capture-lightbox {
-        position: fixed;
-        inset: 0;
-        display: none;
-        width: 100%;
-        height: 100%;
-        max-width: none;
-        max-height: none;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-        overflow: visible;
-        background: transparent;
-        border: 0;
-      }
-      .capture-lightbox[open] { display: flex; }
-      .capture-lightbox::backdrop {
-        background: rgb(8 10 15 / 88%);
-        backdrop-filter: blur(8px);
-        animation: lightbox-backdrop-in 240ms ease both;
-      }
-      .lightbox-frame {
-        position: relative;
-        width: min(92vw, 520px, 41.2dvh);
-        aspect-ratio: 1080 / 2300;
-        overflow: hidden;
-        background: #111214;
-        border: 1px solid rgb(255 255 255 / 18%);
-        border-radius: 24px;
-        box-shadow: 0 28px 90px rgb(0 0 0 / 45%);
-        animation: lightbox-image-in 320ms cubic-bezier(.2,.8,.2,1) both;
-        user-select: none;
-      }
-      .lightbox-frame img {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center bottom;
-        pointer-events: none;
-        transform: translate3d(0, 0, 0) scale(1);
-        transform-origin: center;
-        transition: transform 180ms ease;
-      }
-      .lightbox-frame { touch-action: none; }
-      .lightbox-frame.is-zoomed { cursor: grab; }
-      .lightbox-frame.is-dragging { cursor: grabbing; }
-      .lightbox-frame.is-dragging img { transition: none; }
-      .capture-lightbox.is-sliding-next #lightbox-image { animation: lightbox-slide-next 260ms cubic-bezier(.2,.8,.2,1) both; }
-      .capture-lightbox.is-sliding-prev #lightbox-image { animation: lightbox-slide-prev 260ms cubic-bezier(.2,.8,.2,1) both; }
-      .capture-lightbox.is-closing::backdrop { animation: lightbox-backdrop-out 220ms ease both; }
-      .capture-lightbox.is-closing .lightbox-frame { animation: lightbox-image-out 220ms cubic-bezier(.4,0,.8,.2) both; }
-      .capture-lightbox.is-closing .lightbox-close,
-      .capture-lightbox.is-closing .lightbox-nav,
-      .capture-lightbox.is-closing .lightbox-caption { opacity: 0; transition: opacity 160ms ease; }
-      .lightbox-close {
-        position: fixed;
-        top: max(18px, env(safe-area-inset-top));
-        right: max(18px, env(safe-area-inset-right));
-        display: grid;
-        width: 46px;
-        height: 46px;
-        place-items: center;
-        color: #fff;
-        background: rgb(255 255 255 / 12%);
-        border: 1px solid rgb(255 255 255 / 25%);
-        border-radius: 50%;
-        font: 400 30px/1 "DM Sans", sans-serif;
-        cursor: pointer;
-      }
-      .lightbox-close:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 3px;
-      }
-      .lightbox-nav {
-        position: fixed;
-        top: 50%;
-        display: grid;
-        width: 48px;
-        height: 48px;
-        place-items: center;
-        padding: 0;
-        color: #fff;
-        background: rgb(255 255 255 / 12%);
-        border: 1px solid rgb(255 255 255 / 25%);
-        border-radius: 50%;
-        font: 400 30px/1 "DM Sans", sans-serif;
-        cursor: pointer;
-        transform: translateY(-50%);
-        transition: background-color 180ms ease, transform 180ms ease;
-      }
-      .lightbox-nav:hover { background: rgb(255 255 255 / 24%); }
-      .lightbox-nav:active { transform: translateY(-50%) scale(.94); }
-      .lightbox-nav:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
-      .lightbox-prev { left: max(18px, env(safe-area-inset-left)); }
-      .lightbox-next { right: max(18px, env(safe-area-inset-right)); }
-      .lightbox-caption {
-        position: fixed;
-        right: 76px;
-        bottom: max(16px, env(safe-area-inset-bottom));
-        left: 76px;
-        margin: 0;
-        color: #fff;
-        font-size: 14px;
-        font-weight: 600;
-        text-align: center;
-        text-shadow: 0 1px 8px rgb(0 0 0 / 60%);
-      }
-      .lightbox-zoom {
-        position: absolute;
-        z-index: 2;
-        bottom: max(10px, env(safe-area-inset-bottom));
-        left: 50%;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 7px;
-        color: #fff;
-        background: rgb(20 21 25 / 34%);
-        border: 1px solid rgb(255 255 255 / 24%);
-        border-radius: 999px;
-        transform: translateX(-50%);
-        backdrop-filter: blur(8px) saturate(1.2);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 180ms ease;
-      }
-      .lightbox-frame:hover .lightbox-zoom,
-      .lightbox-zoom:hover,
-      .lightbox-zoom:focus-within,
-      .lightbox-frame.is-zoomed .lightbox-zoom { opacity: 1; pointer-events: auto; }
-      .lightbox-zoom button {
-        display: grid;
-        width: 34px;
-        height: 34px;
-        place-items: center;
-        padding: 0;
-        color: inherit;
-        background: rgb(255 255 255 / 12%);
-        border: 1px solid rgb(255 255 255 / 18%);
-        border-radius: 50%;
-        font-size: 20px;
-        cursor: pointer;
-      }
-      .lightbox-zoom button:hover:not(:disabled) { background: rgb(255 255 255 / 22%); }
-      .lightbox-zoom button:disabled { opacity: .45; cursor: default; }
-      .lightbox-zoom button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-      .lightbox-zoom-level { min-width: 44px; font-size: 12px; font-weight: 700; text-align: center; }
-      .capture-lightbox.is-changing .lightbox-frame { animation: lightbox-image-in 240ms cubic-bezier(.2,.8,.2,1) both; }
-      @keyframes lightbox-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
-      @keyframes lightbox-image-in { from { opacity: 0; transform: translateY(12px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
-      @keyframes lightbox-backdrop-out { from { opacity: 1; } to { opacity: 0; } }
-      @keyframes lightbox-image-out { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(10px) scale(.97); } }
-      @keyframes lightbox-slide-next { from { opacity: .45; transform: translateX(34px); } to { opacity: 1; transform: translateX(0); } }
-      @keyframes lightbox-slide-prev { from { opacity: .45; transform: translateX(-34px); } to { opacity: 1; transform: translateX(0); } }
-      @media (max-width: 900px) {
-        .gallery-grid {
-          grid-template-columns: repeat(5, minmax(180px, 1fr));
-          overflow-x: auto;
-          scroll-snap-type: x mandatory;
-          scrollbar-color: var(--line) transparent;
-          scrollbar-width: thin;
-          padding-bottom: 18px;
-        }
-        .gallery-item { scroll-snap-align: start; }
-      }
-      @media (max-width: 600px) {
-        .gallery-main { min-height: calc(100vh - 68px); padding-top: 42px; }
-        .gallery-heading { margin-bottom: 28px; }
-        .gallery-heading p { font-size: 12px; }
-        .gallery-grid { grid-template-columns: repeat(5, minmax(72vw, 1fr)); gap: 16px; }
-        .image-shell { border-radius: 22px; }
-        .lightbox-frame { width: min(78vw, 41.2dvh); border-radius: 18px; }
-        .lightbox-nav { width: 42px; height: 42px; font-size: 26px; }
-        .lightbox-prev { left: 12px; }
-        .lightbox-next { right: 12px; }
-        .lightbox-zoom { bottom: max(8px, env(safe-area-inset-bottom)); }
-      }
-      @media (hover: none), (pointer: coarse) {
-        .lightbox-zoom { opacity: 1; pointer-events: auto; }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .gallery-item:hover .image-shell { transform: none; }
-        .capture-lightbox::backdrop, .lightbox-frame, .capture-lightbox #lightbox-image { animation: none; }
-        #capture-lightbox.is-sliding-next #lightbox-image,
-        #capture-lightbox.is-sliding-prev #lightbox-image,
-        #capture-lightbox.is-closing::backdrop,
-        #capture-lightbox.is-closing .lightbox-frame { animation: none; }
-        .lightbox-frame img { transition: none; }
-        .lightbox-nav, .lightbox-nav:active { transition: none; transform: translateY(-50%); }
-        .lightbox-zoom button { transition: none; }
-      }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/tailwind.css?v=__BUILD_VERSION__">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
     <script src="JS/main.js?v=__BUILD_VERSION__" defer></script>
   </head>
-  <body>
-    <a class="skip-link" href="#main-content">Saltar al contenido</a>
-    <header class="site-header">
-      <a class="brand" href="index.html#inicio" aria-label="NurseKit, inicio">
-        <img src="RECURSOS/IDENTIDAD/logo.webp?v=__BUILD_VERSION__" alt="" width="42" height="42">
-        <span>NurseKit</span>
-      </a>
-      <nav class="main-navigation" id="main-navigation" aria-label="Navegación principal">
-        <a href="index.html#inicio">Inicio</a>
-        <a href="capturas.html" aria-current="page">Capturas</a>
-        <a href="index.html#herramientas">Herramientas</a>
-        <a href="index.html#preguntas">Preguntas</a>
-        <a class="nav-download" href="index.html#descargar">Descargar</a>
-      </nav>
-      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Cambiar a modo oscuro" aria-pressed="false">
-        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.7"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l-1.42 1.42m11.3-11.3 1.42 1.42"/></svg>
-        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.6 8.6 0 1 0 20.2 15.2Z"/><path d="M16.5 3v3m-1.5-1.5h3"/></svg>
-      </button>
-      <button class="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-navigation">
-        <span></span><span></span>
-      </button>
-    </header>
-
-    <main class="gallery-main" id="main-content">
-      <div class="gallery-heading">
-        <div>
-          <h1 id="gallery-title">Capturas de interfaz de la aplicación</h1>
-          <p data-current-mode>Modo claro</p>
-        </div>
-        <p>¡Te damos la bienvenida! Conoce cómo es la app antes de descargarla.</p>
+  <body class="bg-[#f4f2ea] font-sans text-[#17251f] antialiased dark:bg-[#111a16] dark:text-[#f1f2e9]">
+    <a class="skip-link fixed left-4 top-4 z-50 rounded-full border-2 border-[#244f3d] bg-[#f4f2ea] px-5 py-3 text-sm font-bold text-[#17251f] transition-transform focus:translate-y-0" href="#main-content">Saltar al contenido</a>
+    <header class="sticky top-0 z-40 border-b border-[#d9d8ce] bg-[#f4f2ea]/95 backdrop-blur-xl dark:border-[#304039] dark:bg-[#111a16]/95">
+      <div class="relative mx-auto flex h-[76px] max-w-[1320px] items-center justify-between px-5 md:px-10">
+        <a class="flex items-center gap-3 font-display text-xl font-extrabold tracking-[-0.06em]" href="index.html#inicio" aria-label="NurseKit, inicio"><img class="h-10 w-10 rounded-xl" src="RECURSOS/IDENTIDAD/logo.webp?v=__BUILD_VERSION__" alt="" width="40" height="40"><span>NurseKit<span class="text-[#668b53]">.</span></span></a>
+        <nav class="main-navigation absolute right-0 top-full z-20 w-full gap-1 border-b border-[#d9d8ce] bg-[#f4f2ea] p-5 shadow-xl dark:border-[#304039] dark:bg-[#111a16] md:static md:flex md:w-auto md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0 md:shadow-none dark:md:bg-transparent" id="main-navigation" aria-label="Navegación principal">
+          <a class="rounded-lg px-3 py-2 text-sm font-semibold text-[#526158] hover:text-[#426a3d] dark:text-[#c0c9c0] dark:hover:text-[#b8e58c]" href="index.html#inicio">Inicio</a><a class="rounded-lg px-3 py-2 text-sm font-semibold text-[#426a3d] dark:text-[#b8e58c]" href="capturas.html" aria-current="page">La app</a><a class="rounded-lg px-3 py-2 text-sm font-semibold text-[#526158] hover:text-[#426a3d] dark:text-[#c0c9c0] dark:hover:text-[#b8e58c]" href="index.html#herramientas">Herramientas</a><a class="rounded-full bg-[#244f3d] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#183c2c] dark:bg-[#b8e58c] dark:text-[#17251f]" href="index.html#descargar">Descargar ↗</a>
+        </nav>
+        <div class="ml-3 flex items-center gap-2"><button class="grid h-10 w-10 place-items-center rounded-full border border-[#d9d8ce] text-lg dark:border-[#405148]" id="theme-toggle" type="button" aria-label="Cambiar a modo oscuro" aria-pressed="false"><span data-theme-icon aria-hidden="true">☼</span></button><button class="menu-toggle grid h-10 w-10 place-items-center rounded-full border border-[#d9d8ce] text-xl md:hidden dark:border-[#405148]" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-navigation"><span aria-hidden="true">☰</span></button></div>
       </div>
-
-      <section class="gallery-grid" aria-label="Capturas de NurseKit">
-            <figure class="gallery-item">
-              <button class="image-shell" type="button" aria-label="Ampliar captura: Inicio"><img src="RECURSOS/CAPTURAS_RECORTADAS/claro1.jpg?v=__BUILD_VERSION__" data-light="RECURSOS/CAPTURAS_RECORTADAS/claro1.jpg?v=__BUILD_VERSION__" data-dark="RECURSOS/CAPTURAS_RECORTADAS/oscuro1.jpg?v=__BUILD_VERSION__" alt="" width="1080" height="2300" loading="lazy" decoding="async"></button>
-              <figcaption>Inicio</figcaption>
-            </figure>
-
-            <figure class="gallery-item">
-              <button class="image-shell" type="button" aria-label="Ampliar captura: Recursos"><img src="RECURSOS/CAPTURAS_RECORTADAS/claro2.jpg?v=__BUILD_VERSION__" data-light="RECURSOS/CAPTURAS_RECORTADAS/claro2.jpg?v=__BUILD_VERSION__" data-dark="RECURSOS/CAPTURAS_RECORTADAS/oscuro2.jpg?v=__BUILD_VERSION__" alt="" width="1080" height="2300" loading="lazy" decoding="async"></button>
-              <figcaption>Recursos</figcaption>
-            </figure>
-
-            <figure class="gallery-item">
-              <button class="image-shell" type="button" aria-label="Ampliar captura: Herramientas"><img src="RECURSOS/CAPTURAS_RECORTADAS/claro3.jpg?v=__BUILD_VERSION__" data-light="RECURSOS/CAPTURAS_RECORTADAS/claro3.jpg?v=__BUILD_VERSION__" data-dark="RECURSOS/CAPTURAS_RECORTADAS/oscuro3.jpg?v=__BUILD_VERSION__" alt="" width="1080" height="2300" loading="lazy" decoding="async"></button>
-              <figcaption>Herramientas</figcaption>
-            </figure>
-
-            <figure class="gallery-item">
-              <button class="image-shell" type="button" aria-label="Ampliar captura: Vademécum"><img src="RECURSOS/CAPTURAS_RECORTADAS/claro4.jpg?v=__BUILD_VERSION__" data-light="RECURSOS/CAPTURAS_RECORTADAS/claro4.jpg?v=__BUILD_VERSION__" data-dark="RECURSOS/CAPTURAS_RECORTADAS/oscuro4.jpg?v=__BUILD_VERSION__" alt="" width="1080" height="2300" loading="lazy" decoding="async"></button>
-              <figcaption>Vademécum</figcaption>
-            </figure>
-
-            <figure class="gallery-item">
-              <button class="image-shell" type="button" aria-label="Ampliar captura: Cálculos"><img src="RECURSOS/CAPTURAS_RECORTADAS/claro5.jpg?v=__BUILD_VERSION__" data-light="RECURSOS/CAPTURAS_RECORTADAS/claro5.jpg?v=__BUILD_VERSION__" data-dark="RECURSOS/CAPTURAS_RECORTADAS/oscuro5.jpg?v=__BUILD_VERSION__" alt="" width="1080" height="2300" loading="lazy" decoding="async"></button>
-              <figcaption>Cálculos</figcaption>
-            </figure>
+    </header>
+    <main id="main-content" class="mx-auto max-w-[1320px] px-5 pb-16 pt-12 md:px-10 md:pb-24 md:pt-20">
+      <div class="mb-10 grid gap-6 md:mb-14 md:grid-cols-[1.1fr_.9fr] md:items-end">
+        <div><p class="mb-5 text-xs font-bold uppercase tracking-[.18em] text-[#668b53] dark:text-[#b8e58c]">Un vistazo / 01—05</p><h1 class="max-w-3xl font-display text-4xl font-extrabold leading-[.98] tracking-[-.07em] sm:text-6xl md:text-7xl">La app, antes<br>de abrirla.</h1></div>
+        <div class="md:justify-self-end"><p class="max-w-md leading-7 text-[#667168] dark:text-[#aeb9b0]">Cinco pantallas para conocer NurseKit. Pulsa cualquier captura para verla con más detalle.</p><p class="capture-status mt-4 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#426a3d] dark:text-[#b8e58c]"><span class="theme-swatch light-swatch inline-block h-3 w-3 rounded-full border border-[#89917e]" aria-hidden="true"></span><span data-current-mode>Modo claro</span></p></div>
+      </div>
+      <section class="gallery-grid grid grid-cols-[repeat(5,minmax(72vw,1fr))] gap-4 overflow-x-auto snap-x snap-mandatory pb-5 sm:grid-cols-3 sm:gap-5 lg:grid-cols-5 lg:overflow-visible" aria-label="Capturas de NurseKit">
+        <figure class="gallery-item min-w-0 snap-start"><button class="image-shell group block w-full overflow-hidden rounded-[1.75rem] border border-[#d9d8ce] bg-[#e8e5dc] shadow-lg transition hover:-translate-y-1 hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#668b53] dark:border-[#34443a] dark:bg-[#17221c]" type="button" aria-label="Ampliar captura: Inicio"><img class="block aspect-[1080/2300] w-full object-cover object-bottom" src="RECURSOS/CAPTURAS_RECORTADAS/claro1.jpg?v=__BUILD_VERSION__" data-light="RECURSOS/CAPTURAS_RECORTADAS/claro1.jpg?v=__BUILD_VERSION__" data-dark="RECURSOS/CAPTURAS_RECORTADAS/oscuro1.jpg?v=__BUILD_VERSION__" alt="Pantalla de inicio" width="1080" height="2300" loading="lazy" decoding="async"></button><figcaption class="flex items-baseline justify-between gap-2 px-1 pt-4"><span class="font-display font-bold">Inicio</span><span class="text-xs font-semibold text-[#758077] dark:text-[#9eaaa1]">01</span></figcaption></figure>
+        <figure class="gallery-item min-w-0 snap-start"><button class="image-shell group block w-full overflow-hidden rounded-[1.75rem] border border-[#d9d8ce] bg-[#e8e5dc] shadow-lg transition hover:-translate-y-1 hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#668b53] dark:border-[#34443a] dark:bg-[#17221c]" type="button" aria-label="Ampliar captura: Recursos"><img class="block aspect-[1080/2300] w-full object-cover object-bottom" src="RECURSOS/CAPTURAS_RECORTADAS/claro2.jpg?v=__BUILD_VERSION__" data-light="RECURSOS/CAPTURAS_RECORTADAS/claro2.jpg?v=__BUILD_VERSION__" data-dark="RECURSOS/CAPTURAS_RECORTADAS/oscuro2.jpg?v=__BUILD_VERSION__" alt="Pantalla de recursos" width="1080" height="2300" loading="lazy" decoding="async"></button><figcaption class="flex items-baseline justify-between gap-2 px-1 pt-4"><span class="font-display font-bold">Recursos</span><span class="text-xs font-semibold text-[#758077] dark:text-[#9eaaa1]">02</span></figcaption></figure>
+        <figure class="gallery-item min-w-0 snap-start"><button class="image-shell group block w-full overflow-hidden rounded-[1.75rem] border border-[#d9d8ce] bg-[#e8e5dc] shadow-lg transition hover:-translate-y-1 hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#668b53] dark:border-[#34443a] dark:bg-[#17221c]" type="button" aria-label="Ampliar captura: Herramientas"><img class="block aspect-[1080/2300] w-full object-cover object-bottom" src="RECURSOS/CAPTURAS_RECORTADAS/claro3.jpg?v=__BUILD_VERSION__" data-light="RECURSOS/CAPTURAS_RECORTADAS/claro3.jpg?v=__BUILD_VERSION__" data-dark="RECURSOS/CAPTURAS_RECORTADAS/oscuro3.jpg?v=__BUILD_VERSION__" alt="Pantalla de herramientas" width="1080" height="2300" loading="lazy" decoding="async"></button><figcaption class="flex items-baseline justify-between gap-2 px-1 pt-4"><span class="font-display font-bold">Herramientas</span><span class="text-xs font-semibold text-[#758077] dark:text-[#9eaaa1]">03</span></figcaption></figure>
+        <figure class="gallery-item min-w-0 snap-start"><button class="image-shell group block w-full overflow-hidden rounded-[1.75rem] border border-[#d9d8ce] bg-[#e8e5dc] shadow-lg transition hover:-translate-y-1 hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#668b53] dark:border-[#34443a] dark:bg-[#17221c]" type="button" aria-label="Ampliar captura: Vademécum"><img class="block aspect-[1080/2300] w-full object-cover object-bottom" src="RECURSOS/CAPTURAS_RECORTADAS/claro4.jpg?v=__BUILD_VERSION__" data-light="RECURSOS/CAPTURAS_RECORTADAS/claro4.jpg?v=__BUILD_VERSION__" data-dark="RECURSOS/CAPTURAS_RECORTADAS/oscuro4.jpg?v=__BUILD_VERSION__" alt="Pantalla de Vademécum" width="1080" height="2300" loading="lazy" decoding="async"></button><figcaption class="flex items-baseline justify-between gap-2 px-1 pt-4"><span class="font-display font-bold">Vademécum</span><span class="text-xs font-semibold text-[#758077] dark:text-[#9eaaa1]">04</span></figcaption></figure>
+        <figure class="gallery-item min-w-0 snap-start"><button class="image-shell group block w-full overflow-hidden rounded-[1.75rem] border border-[#d9d8ce] bg-[#e8e5dc] shadow-lg transition hover:-translate-y-1 hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#668b53] dark:border-[#34443a] dark:bg-[#17221c]" type="button" aria-label="Ampliar captura: Cálculos"><img class="block aspect-[1080/2300] w-full object-cover object-bottom" src="RECURSOS/CAPTURAS_RECORTADAS/claro5.jpg?v=__BUILD_VERSION__" data-light="RECURSOS/CAPTURAS_RECORTADAS/claro5.jpg?v=__BUILD_VERSION__" data-dark="RECURSOS/CAPTURAS_RECORTADAS/oscuro5.jpg?v=__BUILD_VERSION__" alt="Pantalla de cálculos clínicos" width="1080" height="2300" loading="lazy" decoding="async"></button><figcaption class="flex items-baseline justify-between gap-2 px-1 pt-4"><span class="font-display font-bold">Cálculos</span><span class="text-xs font-semibold text-[#758077] dark:text-[#9eaaa1]">05</span></figcaption></figure>
       </section>
     </main>
-    <footer class="site-footer">
-      <div class="footer-identity">
-        <a class="brand footer-brand" href="index.html#inicio"><span>NurseKit</span></a>
-        <p>Recurso educativo y de apoyo técnico. No sustituye el juicio clínico ni los protocolos institucionales.</p>
-        <p class="footer-company">Desarrollado por RCAX Labs</p>
-        <span class="footer-support-title">Soporte</span>
-        <a class="footer-contact-link" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=ig.carlosivan02%40gmail.com&amp;su=Soporte%20NurseKit" target="_blank" rel="noopener noreferrer">ig.carlosivan02@gmail.com</a>
-      </div>
-      <div class="footer-contact">
-        <span class="footer-nav-title">Redes sociales</span>
-        <a class="footer-social-link" href="https://whatsapp.com/channel/0029Vb8tmrQ2ZjCsbtK6os0n" target="_blank" rel="noreferrer">
-          <svg class="social-icon whatsapp-icon" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#25D366"/><path fill="#fff" d="M29.2 10.7a13 13 0 0 0-20.5 15.7L7 33l6.8-1.8a13 13 0 0 0 15.4-20.5ZM20 29.2c-2 0-4-.5-5.7-1.6l-.4-.2-4 1 1.1-3.9-.3-.4A9.7 9.7 0 1 1 20 29.2Zm5.3-7.3c-.3-.1-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2l-1 1.1c-.2.2-.4.3-.7.1a8.1 8.1 0 0 1-2.4-1.5 9 9 0 0 1-1.7-2.1c-.2-.3 0-.5.1-.7l.5-.5.3-.5c.1-.2 0-.4 0-.6l-1-2.3c-.3-.6-.6-.5-.8-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.2 5 4.4.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4 0-.1-.2-.2-.5-.3Z"/></svg>
-          <span>Canal de WhatsApp</span>
-          <span class="social-arrow" aria-hidden="true">↗</span>
-        </a>
-        <span class="footer-social-link social-upcoming">
-          <svg class="social-icon facebook-icon" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#0866FF"/><path fill="#fff" d="M22.4 33V21.2h4l.6-4.6h-4.6v-2.9c0-1.3.4-2.2 2.3-2.2h2.5V7.4c-.4-.1-1.9-.2-3.6-.2-3.6 0-6 2.2-6 6.2v3.2h-4v4.6h4V33h4.8Z"/></svg>
-          <span>Facebook <small>Próximamente</small></span>
-        </span>
-      </div>
-      <nav class="footer-legal" aria-label="Información legal">
-        <span class="footer-nav-title">Información</span>
-        <a href="privacidad.html">Política de privacidad</a>
-        <a href="normas-uso.html">Normas de uso</a>
-      </nav>
-      <span class="copyright">© <span id="current-year">2026</span> NurseKit · RCAX Labs</span>
-    </footer>
-    <dialog class="capture-lightbox" id="capture-lightbox" aria-label="Captura ampliada">
-      <button class="lightbox-close" type="button" aria-label="Cerrar captura ampliada">×</button>
-      <button class="lightbox-nav lightbox-prev" type="button" aria-label="Ver captura anterior">‹</button>
-      <div class="lightbox-frame">
-        <img id="lightbox-image" alt="" draggable="false">
-        <div class="lightbox-zoom" role="group" aria-label="Controles de zoom">
-          <button class="zoom-out" type="button" aria-label="Alejar" disabled>−</button>
-          <span class="lightbox-zoom-level" id="lightbox-zoom-level" aria-live="polite">100%</span>
-          <button class="zoom-in" type="button" aria-label="Acercar">+</button>
-          <button class="zoom-reset" type="button" aria-label="Restablecer zoom">↺</button>
+    <footer class="bg-[#17251f] text-[#f1f2e9] dark:bg-[#0b110e]">
+      <div class="mx-auto grid max-w-[1320px] gap-10 px-5 py-12 md:grid-cols-[1.3fr_.7fr_.7fr_.7fr] md:px-10">
+        <div><a class="font-display text-2xl font-extrabold tracking-[-.06em]" href="index.html#inicio">NurseKit<span class="text-[#b8e58c]">.</span></a><p class="mt-4 max-w-md text-sm leading-6 text-[#c0c9c0]">Recurso educativo y de apoyo técnico. No sustituye el juicio clínico ni los protocolos institucionales.</p><p class="mb-0 mt-5 text-xs font-semibold text-[#9eaaa1]">Desarrollado por RCAX Labs</p></div>
+        <div><p class="text-xs font-bold uppercase tracking-[.16em] text-[#b8e58c]">Enlaces</p><a class="mt-4 block text-sm text-[#d6ddd6] hover:text-white" href="capturas.html">Capturas de la app</a><a class="mt-3 block text-sm text-[#d6ddd6] hover:text-white" href="privacidad.html">Política de privacidad</a><a class="mt-3 block text-sm text-[#d6ddd6] hover:text-white" href="normas-uso.html">Normas de uso</a></div>
+        <div><p class="text-xs font-bold uppercase tracking-[.16em] text-[#b8e58c]">Contacto</p>
+          <div class="mt-4 grid gap-3">
+            <button class="flex w-fit items-center gap-3 border-0 bg-transparent p-0 text-left text-sm text-[#d6ddd6] transition hover:text-white" type="button" data-contact-open aria-haspopup="dialog" aria-controls="contact-dialog"><img class="h-7 w-7 object-contain" src="RECURSOS/ICONOS/gmail_logo.png" alt="" aria-hidden="true"><span><span class="block text-xs text-[#9eaaa1]">Soporte por correo</span><span class="mt-0.5 block font-semibold">Gmail</span></span></button>
+          </div>
+        </div>
+        <div><p class="text-xs font-bold uppercase tracking-[.16em] text-[#b8e58c]">Redes sociales</p>
+          <div class="mt-4 grid gap-3">
+            <a class="flex w-fit items-center gap-3 text-sm text-[#d6ddd6] transition hover:text-white" href="https://whatsapp.com/channel/0029Vb8tmrQ2ZjCsbtK6os0n" target="_blank" rel="noopener noreferrer"><img class="h-7 w-7 object-contain" src="RECURSOS/ICONOS/wasap_logo.png" alt="" aria-hidden="true"><span class="font-semibold">WhatsApp</span></a>
+          </div>
         </div>
       </div>
-      <button class="lightbox-nav lightbox-next" type="button" aria-label="Ver captura siguiente">›</button>
+      <div class="border-t border-white/15"><div class="mx-auto flex max-w-[1320px] flex-wrap justify-between gap-2 px-5 py-4 text-xs text-[#aeb9b0] md:px-10"><span>© <span id="current-year">2026</span> NurseKit · RCAX Labs</span><span>Hecha para aprender y acompañar.</span></div></div>
+    </footer>
+    <dialog class="capture-lightbox" id="capture-lightbox" aria-label="Captura de NurseKit ampliada">
+      <button class="lightbox-close focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white" type="button" aria-label="Cerrar captura ampliada">×</button>
+      <button class="lightbox-nav lightbox-prev focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white" type="button" aria-label="Ver captura anterior">‹</button>
+      <div class="lightbox-frame"><img id="lightbox-image" alt="" draggable="false"><div class="lightbox-zoom" role="group" aria-label="Controles de zoom"><button class="zoom-out" type="button" aria-label="Alejar" disabled>−</button><span class="lightbox-zoom-level" id="lightbox-zoom-level" aria-live="polite">100%</span><button class="zoom-in" type="button" aria-label="Acercar">+</button><button class="zoom-reset" type="button" aria-label="Restablecer zoom">↺</button></div></div>
+      <button class="lightbox-nav lightbox-next focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white" type="button" aria-label="Ver captura siguiente">›</button>
       <p class="lightbox-caption" id="lightbox-caption" aria-live="polite"></p>
+    </dialog>
+    <dialog class="contact-dialog w-[calc(100%-2rem)] max-w-lg rounded-3xl border border-[#d9d8ce] p-0 text-[#17251f] shadow-2xl dark:border-[#34443a] dark:text-[#f1f2e9]" id="contact-dialog" aria-labelledby="contact-title">
+      <div class="p-6 sm:p-8">
+        <div class="flex items-start justify-between gap-6">
+          <div><p class="text-xs font-bold uppercase tracking-[.16em] text-[#668b53] dark:text-[#b8e58c]">Soporte NurseKit</p><h2 class="mt-2 font-display text-2xl font-extrabold tracking-tight" id="contact-title">Escríbenos</h2><p class="mt-2 text-sm leading-6 text-[#667168] dark:text-[#aeb9b0]">Déjanos tu correo y tu mensaje. Te responderemos a la dirección que indiques.</p></div>
+          <button class="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[#d9d8ce] text-2xl leading-none text-[#526158] transition hover:bg-[#ece9df] dark:border-[#405148] dark:text-[#d6ddd6] dark:hover:bg-[#213328]" type="button" data-contact-close aria-label="Cerrar formulario">×</button>
+        </div>
+        <form class="mt-6 grid gap-4" id="contact-form">
+          <label class="grid gap-2 text-sm font-semibold" for="contact-email">Tu Gmail o correo
+            <input class="min-h-12 rounded-xl border border-[#c9c8bd] bg-white px-4 text-[#17251f] outline-none transition placeholder:text-[#879087] focus:border-[#668b53] focus:ring-2 focus:ring-[#668b53]/20 dark:border-[#405148] dark:bg-[#111a16] dark:text-[#f1f2e9] dark:focus:border-[#b8e58c]" id="contact-email" name="from_email" type="email" autocomplete="email" maxlength="254" placeholder="tu@gmail.com" required autofocus>
+          </label>
+          <label class="grid gap-2 text-sm font-semibold" for="contact-message">Mensaje
+            <textarea class="min-h-36 resize-y rounded-xl border border-[#c9c8bd] bg-white px-4 py-3 text-[#17251f] outline-none transition placeholder:text-[#879087] focus:border-[#668b53] focus:ring-2 focus:ring-[#668b53]/20 dark:border-[#405148] dark:bg-[#111a16] dark:text-[#f1f2e9] dark:focus:border-[#b8e58c]" id="contact-message" name="message" maxlength="4000" placeholder="¿En qué podemos ayudarte?" required></textarea>
+          </label>
+          <p class="text-xs leading-5 text-[#758077] dark:text-[#9eaaa1]">No incluyas datos personales ni información que identifique a pacientes.</p>
+          <p class="contact-form-status hidden text-sm font-semibold" id="contact-form-status" role="status" aria-live="polite" aria-atomic="true"></p>
+          <button class="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#244f3d] px-6 font-bold text-white transition hover:bg-[#183c2c] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#668b53] disabled:cursor-wait disabled:opacity-60 dark:bg-[#b8e58c] dark:text-[#17251f] dark:hover:bg-[#c9efa3]" id="contact-submit" type="submit">Enviar mensaje <span aria-hidden="true">↗</span></button>
+        </form>
+      </div>
     </dialog>
   </body>
 </html>
